@@ -1,5 +1,16 @@
 from PIL import Image, ImageDraw
 import numpy as np
+from enum import Enum
+
+
+class Mode(Enum):
+    ONE = '1'
+    L = 'L'
+    P = 'P'
+    RGB = 'RGB'
+    HSV = 'HSV'
+    LAB = 'LAB'
+    RGBA = 'RGBA'
 
 
 class MyImage:
@@ -58,13 +69,17 @@ class MyImage:
         return new_image
 
     @staticmethod
+    def type_conversion(image, mode=Mode):
+        return image.convert(mode)
+
+    @staticmethod
     def create_square_image(size: (int, int) = (200, 200), mode: str = "L"):
         image = Image.new(mode, size)
         draw = ImageDraw.Draw(image)
         draw.rectangle(((size[0] / 2) - (size[0] / 4),
-                      (size[1] / 2) - (size[1] / 4),
-                      (size[0] / 2) + (size[0] / 4),
-                      (size[1] / 2) + (size[1] / 4)), fill=255)
+                        (size[1] / 2) - (size[1] / 4),
+                        (size[0] / 2) + (size[0] / 4),
+                        (size[1] / 2) + (size[1] / 4)), fill=255)
         return image
 
     @staticmethod
@@ -94,9 +109,6 @@ sizeDict = {
 photo = MyImage('/Users/pedroremigiopingarilho/Desktop/ITBA/ATI/ATI/Photos/LENA.RAW', sizeDict['LENA'])
 photo2 = MyImage('/Users/pedroremigiopingarilho/Desktop/ITBA/ATI/ATI/Photos/GIRL.RAW', sizeDict['GIRL'])
 
-a = MyImage.create_square_image((20, 20))
+a = MyImage.create_circle_image(sizeDict['GIRL'])
 
-
-photo.copy(photo2.image, (60, 80), a.resize(sizeDict['GIRL'])).show()
-
-
+photo.copy(photo2.image, (0, 0), a.resize(sizeDict['GIRL'])).show()
