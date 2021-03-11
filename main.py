@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageDraw
 import numpy as np
 
 
@@ -52,12 +52,29 @@ class MyImage:
     def modify_pixel(self, pos: (int, ...), new_pixel):
         self.pixels[pos] = new_pixel
 
-    def copy(self, image1, image2):
-        pass
+    def copy(self, image_to_copy, box, mask=None):
+        new_image = self.image.copy()
+        new_image.paste(image_to_copy, box, mask)
+        return new_image
 
     @staticmethod
     def create_square_image(size: (int, int) = (200, 200), mode: str = "L"):
         image = Image.new(mode, size)
+        draw = ImageDraw.Draw(image)
+        draw.rectangle(((size[0] / 2) - (size[0] / 4),
+                      (size[1] / 2) - (size[1] / 4),
+                      (size[0] / 2) + (size[0] / 4),
+                      (size[1] / 2) + (size[1] / 4)), fill=255)
+        return image
+
+    @staticmethod
+    def create_circle_image(size: (int, int) = (200, 200), mode: str = "L"):
+        image = Image.new(mode, size)
+        draw = ImageDraw.Draw(image)
+        draw.ellipse(((size[0] / 2) - (size[0] / 4),
+                      (size[1] / 2) - (size[1] / 4),
+                      (size[0] / 2) + (size[0] / 4),
+                      (size[1] / 2) + (size[1] / 4)), fill=255)
         return image
 
 
@@ -74,8 +91,12 @@ sizeDict = {
 #
 # print(MyImage.get_pixel(lena2, (100, 200)))
 
-photo = MyImage('/Users/pedroremigiopingarilho/Desktop/ITBA/ATI/ATI/Photos/Lenaclor.pbm', sizeDict['LENA'])
-photo.modify_pixel((2, 2), (0, 0, 0))
-photo.image.show()
+photo = MyImage('/Users/pedroremigiopingarilho/Desktop/ITBA/ATI/ATI/Photos/LENA.RAW', sizeDict['LENA'])
+photo2 = MyImage('/Users/pedroremigiopingarilho/Desktop/ITBA/ATI/ATI/Photos/GIRL.RAW', sizeDict['GIRL'])
 
-# MyImage.create_square_image().show()
+a = MyImage.create_square_image((20, 20))
+
+
+photo.copy(photo2.image, (60, 80), a.resize(sizeDict['GIRL'])).show()
+
+
