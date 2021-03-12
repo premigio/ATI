@@ -35,10 +35,16 @@ class MainWindow(QWidget):
         imagePreviewAndDataLayout = QHBoxLayout()
         imageDataLayout = QVBoxLayout()
 
+        sideActionsLayout = QVBoxLayout()
+        sideActionsLayout.setAlignment(Qt.AlignRight)
+        sideActionsLayout.addWidget(QPushButton("Square", clicked=self.showSquare))
+        sideActionsLayout.addWidget(QPushButton("Circle", clicked=self.showCircle))
+
         fileActionsLayout = QVBoxLayout()
         fileActionsLayout.setAlignment(Qt.AlignBottom)
         fileActionsLayout.addWidget(QPushButton("Change selected file", clicked=self.selectFileButtonClicked))
 
+        imageDataLayout.addLayout(sideActionsLayout)
         imageDataLayout.addLayout(fileActionsLayout)
         imagePreviewAndDataLayout.addLayout(imageDataLayout)
         mainLayout.addLayout(imagePreviewAndDataLayout)
@@ -46,6 +52,12 @@ class MainWindow(QWidget):
         self.setLayout(mainLayout)
         # self.setCentralWidget(widget)
         self.show()
+
+    def showSquare(self):
+        MyImage.create_square_image().show()
+
+    def showCircle(self):
+        MyImage.create_circle_image().show()
 
     def selectFileButtonClicked(self):
         options = QFileDialog.Options()
