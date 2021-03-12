@@ -2,10 +2,10 @@ import os
 import sys
 
 from PIL.ImageQt import ImageQt
-from PyQt5 import QtCore
-from PyQt5.QtGui import QPixmap
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtGui import QPixmap, QIntValidator
 from PyQt5.QtWidgets import QLabel, QMainWindow, QVBoxLayout, QPushButton, QHBoxLayout, QFileDialog, QApplication, \
-    QWidget, QInputDialog, QTabWidget
+    QWidget, QInputDialog, QTabWidget, QLineEdit, QMessageBox
 from PyQt5.QtCore import Qt
 
 # Subclass QMainWindow to customise your application's main window
@@ -16,7 +16,7 @@ from TP0.main import sizeDict
 
 
 class MainWindow(QWidget):
-    image: MyImage
+    myImage: MyImage
 
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
@@ -25,7 +25,7 @@ class MainWindow(QWidget):
         self.top = 100
         self.width = 1000
         self.height = 750
-        self.image = None
+        self.myImage = None
 
         self.set_layouts()
 
@@ -36,15 +36,15 @@ class MainWindow(QWidget):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        mainLayout = QVBoxLayout()
+        mainLayout = QHBoxLayout()
 
         # IMAGE 1
 
         # Layout for image visualization
-        imagePreviewAndDataLayout = QHBoxLayout()
+        imagePreviewAndDataLayout = QVBoxLayout()
 
         self.imageLabel = QLabel(alignment=(Qt.AlignVCenter | Qt.AlignHCenter))
-        self.imageLabel.setFixedSize(400, 400)
+        self.imageLabel.setFixedSize(300, 300)
         self.imageLabel.setStyleSheet(
             "QLabel { border-style: solid; border-width: 2px; border-color: rgba(0, 0, 0, 0.1); }")
         imagePreviewAndDataLayout.addWidget(self.imageLabel)
@@ -67,17 +67,17 @@ class MainWindow(QWidget):
         imageDirLayout.addWidget(self.imagePathLabel)
         imageLabelDataLayout.addLayout(imageDirLayout)
 
-        imageHeightLayout = QHBoxLayout()
-        imageHeightLayout.addWidget(QLabel("Height: ", objectName='title', alignment=Qt.AlignLeft))
-        self.imageHeightLabel = QLabel("None", alignment=Qt.AlignRight)
-        imageHeightLayout.addWidget(self.imageHeightLabel)
-        imageLabelDataLayout.addLayout(imageHeightLayout)
-
-        imageWidthLayout = QHBoxLayout()
-        imageWidthLayout.addWidget(QLabel("Width: ", objectName='title', alignment=Qt.AlignLeft))
-        self.imageWidthLabel = QLabel("None", alignment=Qt.AlignRight)
-        imageWidthLayout.addWidget(self.imageWidthLabel)
-        imageLabelDataLayout.addLayout(imageWidthLayout)
+        # imageHeightLayout = QHBoxLayout()
+        # imageHeightLayout.addWidget(QLabel("Height: ", objectName='title', alignment=Qt.AlignLeft))
+        # self.imageHeightLabel = QLabel("None", alignment=Qt.AlignRight)
+        # imageHeightLayout.addWidget(self.imageHeightLabel)
+        # imageLabelDataLayout.addLayout(imageHeightLayout)
+        #
+        # imageWidthLayout = QHBoxLayout()
+        # imageWidthLayout.addWidget(QLabel("Width: ", objectName='title', alignment=Qt.AlignLeft))
+        # self.imageWidthLabel = QLabel("None", alignment=Qt.AlignRight)
+        # imageWidthLayout.addWidget(self.imageWidthLabel)
+        # imageLabelDataLayout.addLayout(imageWidthLayout)
 
         imageDataLayout.addLayout(imageLabelDataLayout)
 
@@ -86,10 +86,36 @@ class MainWindow(QWidget):
         imageActionsLayout.setAlignment(Qt.AlignTop)
         imageActionsLayout.addWidget(QPushButton("Select image", clicked=self.selectImage))
         imageActionsLayout.addWidget(QPushButton("Convert to HSV", clicked=self.showHSV))
-        imageActionsLayout.addWidget(QPushButton("Get pixel", clicked=self.getPixel))
-        self.pixelLabel = QLabel("None", alignment=Qt.AlignRight)
-        imageActionsLayout.addWidget(self.pixelLabel)
-        imageActionsLayout.addWidget(QPushButton("Set pixel", clicked=self.setPixel))
+
+        pixelActionsLayout = QVBoxLayout()
+
+        pixelInputLayout = QVBoxLayout()
+        pixelXLayout = QHBoxLayout()
+        pixelYLayout = QHBoxLayout()
+        pixelXLabel = QLabel("X: ")
+        # xIntValidator = QIntValidator(0, self.myImage.dimensions[0]) if self.myImage is not None else QIntValidator()
+        self.pixelXLineEdit = QLineEdit()
+        self.pixelXLineEdit.setValidator(QIntValidator())
+        pixelXLayout.addWidget(pixelXLabel)
+        pixelXLayout.addWidget(self.pixelXLineEdit)
+        pixelYLabel = QLabel("Y: ")
+        # yIntValidator = QIntValidator(0, self.myImage.dimensions[1]) if self.myImage is not None else QIntValidator()
+        self.pixelYLineEdit = QLineEdit()
+        self.pixelYLineEdit.setValidator(QIntValidator())
+        pixelYLayout.addWidget(pixelYLabel)
+        pixelYLayout.addWidget(self.pixelYLineEdit)
+        pixelInputLayout.addLayout(pixelXLayout)
+        pixelInputLayout.addLayout(pixelYLayout)
+
+        getPixelLayout = QVBoxLayout()
+        getPixelLayout.addWidget(QPushButton("Get pixel", clicked=self.getPixel))
+        self.pixelLabel = QLabel("", alignment=Qt.AlignRight)
+        getPixelLayout.addWidget(self.pixelLabel)
+
+        pixelActionsLayout.addLayout(pixelInputLayout)
+        pixelActionsLayout.addWidget(QPushButton("Set pixel", clicked=self.setPixel))
+        pixelActionsLayout.addLayout(getPixelLayout)
+        imageActionsLayout.addLayout(pixelActionsLayout)
 
         imageDataLayout.addLayout(imageActionsLayout)
         imagePreviewAndDataLayout.addLayout(imageDataLayout)
@@ -99,12 +125,10 @@ class MainWindow(QWidget):
         self.tabLayout = QTabWidget()
         operationsTab = QWidget()
         operationsLayout = QHBoxLayout()
-        operationsButton = QPushButton("Operations between Images")
-        operationsButton.clicked.connect(self.operation_between_images)
+        operationsButton = QPushButton("Operations between Images", clicked=self.operationBetweenImages)
         operationsLayout.addWidget(operationsButton)
         operationsTab.setLayout(operationsLayout)
 
-        generatorTab = QWidget()
         generatorTab = QWidget()
         sideActionsLayout = QVBoxLayout()
         sideActionsLayout.setAlignment(Qt.AlignCenter)
@@ -126,23 +150,36 @@ class MainWindow(QWidget):
         MyImage.create_circle_image().show()
 
     def getPixel(self):
-        pixel_x = self.askForInt("Enter X coordinate", 0)
-        pixel_y = self.askForInt("Enter Y coordinate", 0)
-        pixel = MyImage.get_pixel(self.image.image, (pixel_x, pixel_y))
-        if pixel:
-            self.pixelLabel.setText(str(pixel))
+        self.pixelX = self.pixelXLineEdit.text()
+        self.pixelY = self.pixelYLineEdit.text()
+        if self.myImage is not None:
+            pixel = MyImage.get_pixel(self.myImage.image, (self.pixelX, self.pixelY))
+            if pixel:
+                self.pixelLabel.setText(str(pixel))
+        else:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage('You must select an image first')
+            error_dialog.show()
 
     def setPixel(self):
-        pixel_x = self.askForInt("Enter X coordinate", 0)
-        pixel_y = self.askForInt("Enter Y coordinate", 0)
-        pixel = self.askForInt("Set pixel value", 0)
-        MyImage.modify_pixel(self.image, (pixel_x, pixel_y), pixel)
+        if self.myImage is not None:
+            pixel = self.askForInt("Set pixel value", 0)
+            MyImage.modify_pixel(self.myImage, (self.pixelX, self.pixelY), pixel)
+            self.drawImage(self.myImage)
 
     def showHSV(self):
-        MyImage.type_conversion(self.image.image, Mode.HSV)
+        MyImage.type_conversion(self.myImage.image, Mode.HSV)
 
-    def operation_between_images(self):
-        self.views.append(OperationsBetweenImages())
+    def operationBetweenImages(self):
+        if self.myImage is None:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setInformativeText('More information')
+            msg.setWindowTitle("Error")
+            return msg
+        else:
+            self.views.append(OperationsBetweenImages())
 
     def selectImage(self):
         options = QFileDialog.Options()
@@ -151,7 +188,7 @@ class MainWindow(QWidget):
                                                     options=options)
         size = self.askRawImage(image_path)
         if size:
-            self.loadImage(MyImage(image_path, size))
+            self.drawImage(MyImage(image_path, size))
             return True
         return False
 
@@ -164,15 +201,15 @@ class MainWindow(QWidget):
                 return width, height
         return None
 
-    def loadImage(self, img: MyImage = None):
+    def drawImage(self, img: MyImage = None):
         if img is not None:
-            self.image = img
-            self.imageWidthLabel.setText(str(img.dimensions[0]))
-            self.imageHeightLabel.setText(str(img.dimensions[1]))
+            self.myImage = img
+            # self.imageWidthLabel.setText(str(img.dimensions[0]))
+            # self.imageHeightLabel.setText(str(img.dimensions[1]))
             self.imageNameLabel.setText(img.file_name)
             self.imagePathLabel.setText(img.path)
 
-        qim = ImageQt(self.image.image)
+        qim = ImageQt(self.myImage.image)
         pixmap = QPixmap.fromImage(qim).scaled(self.imageLabel.width(), self.imageLabel.height(),
                                                QtCore.Qt.KeepAspectRatio)
         self.imageLabel.setPixmap(pixmap)
@@ -185,10 +222,6 @@ class MainWindow(QWidget):
 def main():
     app = QApplication(sys.argv)
     main_window = MainWindow()
-
-    # Force load file
-    if not main_window.selectImage():
-        return
 
     sys.exit(app.exec_())
 

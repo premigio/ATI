@@ -16,4 +16,4 @@ sizeDict = {
 photo = MyImage('../Photos/LENA.RAW', sizeDict['LENA'])
 photo2 = MyImage('../Photos/GIRL2.RAW', sizeDict['GIRL2'])
 
-MyImage.multiply_photos(photo.image, photo2.image).show()
+# MyImage.multiply_photos(photo.image, photo2.image).show()
