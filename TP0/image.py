@@ -1,3 +1,5 @@
+import os
+
 from PIL import Image, ImageDraw, ImageChops
 import numpy as np
 from enum import Enum
@@ -41,7 +43,9 @@ class MyImage:
 
     def __init__(self, path: str, raw_prop: (int, int) = None):
         self.path = path
+        self.dimensions = raw_prop
         if path is not None:
+            self.file_name = os.path.basename(path)
             self.extension = path.split('.')[-1]
             self.image = self.my_load_image(raw_prop)
             self.pixels = self.image.load()
