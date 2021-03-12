@@ -14,8 +14,6 @@ sizeDict = {
 # print(MyImage.get_pixel(lena2, (100, 200)))
 
 photo = MyImage('../Photos/LENA.RAW', sizeDict['LENA'])
-photo2 = MyImage('../Photos/GIRL.RAW', sizeDict['GIRL'])
+photo2 = MyImage('../Photos/GIRL2.RAW', sizeDict['GIRL2'])
 
-a = MyImage.create_circle_image(sizeDict['GIRL'])
-
-photo.copy(photo2.image, (0, 0), a.resize(sizeDict['GIRL'])).show()
+MyImage.multiply_photos(photo.image, photo2.image).show()

@@ -2,6 +2,7 @@ from PIL import Image, ImageDraw, ImageChops
 import numpy as np
 from enum import Enum
 
+
 class Mode(Enum):
     ONE = '1'
     L = 'L'
@@ -10,6 +11,30 @@ class Mode(Enum):
     HSV = 'HSV'
     LAB = 'LAB'
     RGBA = 'RGBA'
+
+
+def normalization(arr):
+    macs = np.max(arr)
+    mim = np.min(arr)
+
+    if macs - mim == 0:
+        return arr
+    m = 255 / (macs - mim)
+    c = - m * mim
+
+    return arr * m + c
+
+
+def photo_combination(image1: Image, image2: Image, function):
+    i1array = np.array(image1)
+    i2array = np.array(image2)
+
+    i1af = i1array.astype('float')
+    i2af = i2array.astype('float')
+
+    addition = function(i1af, i2af)
+
+    return Image.fromarray(normalization(addition).astype('uint8'))
 
 
 class MyImage:
@@ -69,15 +94,15 @@ class MyImage:
 
     @staticmethod
     def add_photos(image1: Image, image2: Image):
-        i1array = np.array(image1)
-        i2array = np.array(image2)
+        return photo_combination(image1, image2, lambda x, y: x + y)
 
-        i1af = i1array.astype('float')
-        i2af = i2array.astype('float')
+    @staticmethod
+    def subtract_photos(image1: Image, image2: Image):
+        return photo_combination(image1, image2, lambda x, y: x - y)
 
-        addition = (i1af + i2af) / 2
-
-        return Image.fromarray(addition.astype('uint8'))
+    @staticmethod
+    def multiply_photos(image1: Image, image2: Image):
+        return photo_combination(image1, image2, lambda x, y: x * y)
 
     @staticmethod
     def add_photos_lib(image1: Image, image2: Image):
