@@ -109,7 +109,7 @@ class MyImage:
         return Image.blend(image1, image2, 0.5)
 
     @staticmethod
-    def type_conversion(image, mode=Mode):
+    def type_conversion(image, mode: Mode = Mode.HSV):
         return image.convert(mode)
 
     @staticmethod
