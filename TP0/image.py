@@ -1,6 +1,6 @@
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageChops
+import numpy as np
 from enum import Enum
-
 
 class Mode(Enum):
     ONE = '1'
@@ -66,6 +66,22 @@ class MyImage:
         new_image = self.image.copy()
         new_image.paste(image_to_copy, box, mask)
         return new_image
+
+    @staticmethod
+    def add_photos(image1: Image, image2: Image):
+        i1array = np.array(image1)
+        i2array = np.array(image2)
+
+        i1af = i1array.astype('float')
+        i2af = i2array.astype('float')
+
+        addition = (i1af + i2af) / 2
+
+        return Image.fromarray(addition.astype('uint8'))
+
+    @staticmethod
+    def add_photos_lib(image1: Image, image2: Image):
+        return Image.blend(image1, image2, 0.5)
 
     @staticmethod
     def type_conversion(image, mode=Mode):
