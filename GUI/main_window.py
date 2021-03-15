@@ -109,8 +109,12 @@ class MainWindow(QWidget):
 
         getPixelLayout = QVBoxLayout()
         getPixelLayout.addWidget(QPushButton("Get pixel", clicked=self.getPixel))
+        showPixelLayout = QHBoxLayout()
+        showPixelTitle = QLabel("Pixel: ", alignment=Qt.AlignLeft)
         self.pixelLabel = QLabel("", alignment=Qt.AlignRight)
-        getPixelLayout.addWidget(self.pixelLabel)
+        showPixelLayout.addWidget(showPixelTitle)
+        showPixelLayout.addWidget(self.pixelLabel)
+        getPixelLayout.addLayout(showPixelLayout)
 
         pixelActionsLayout.addLayout(pixelInputLayout)
         pixelActionsLayout.addWidget(QPushButton("Set pixel", clicked=self.setPixel))
@@ -150,13 +154,14 @@ class MainWindow(QWidget):
         MyImage.create_circle_image().show()
 
     def getPixel(self):
-        self.pixelX = self.pixelXLineEdit.text()
-        self.pixelY = self.pixelYLineEdit.text()
+        self.pixelX = int(self.pixelXLineEdit.text())
+        self.pixelY = int(self.pixelYLineEdit.text())
         if self.myImage is not None:
             pixel = MyImage.get_pixel(self.myImage.image, (self.pixelX, self.pixelY))
             if pixel:
                 self.pixelLabel.setText(str(pixel))
         else:
+            # no anda, qmessage tampoco
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.showMessage('You must select an image first')
             error_dialog.show()
