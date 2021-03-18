@@ -167,6 +167,8 @@ class MainWindow(QWidget):
         MyImage.create_circle_image().show()
 
     def get_pixel(self):
+        if self.pixelXLineEdit.text() == '' or self.pixelYLineEdit.text() == '':
+            return
         self.pixelX = int(self.pixelXLineEdit.text())
         self.pixelY = int(self.pixelYLineEdit.text())
         if self.myImage is not None:
@@ -180,10 +182,20 @@ class MainWindow(QWidget):
             error_dialog.show()
 
     def set_pixel(self):
-        if self.myImage is not None:
+        self.pixelX = int(self.pixelXLineEdit.text())
+        self.pixelY = int(self.pixelYLineEdit.text())
+        if self.myImage is None:
+            return
+        if self.myImage.extension.lower() == 'raw':
             pixel = self.ask_for_int("Set pixel value", 0)
-            MyImage.modify_pixel(self.myImage, (self.pixelX, self.pixelY), pixel)
-            self.draw_image(self.myImage)
+        else:
+            r = self.ask_for_int("Enter image red", 256)
+            g = self.ask_for_int("Enter image green", 256)
+            b = self.ask_for_int("Enter image blue", 256)
+            pixel = (r, g, b)
+        self.myImage.modify_pixel((self.pixelX, self.pixelY), pixel)
+        self.myImage.image.show()
+        self.draw_image(self.myImage)
 
     def show_hsv(self):
         if self.myImage is not None:
@@ -228,7 +240,6 @@ class MainWindow(QWidget):
         else:
             return False
 
-
     def draw_image(self, img: MyImage = None):
         if img is not None:
             self.myImage = img
@@ -237,12 +248,13 @@ class MainWindow(QWidget):
             self.imageNameLabel.setText(img.file_name)
             self.image_path_label.setText(img.path)
 
+
         qim = ImageQt(self.myImage.image)
         pixmap = QPixmap.fromImage(qim).scaled(self.image_label.width(), self.image_label.height(),
                                                QtCore.Qt.KeepAspectRatio)
         self.image_label.setPixmap(pixmap)
 
-    def ask_for_int(self, message: str, default: int = 1, min: int = 1, max: int = 2147483647,
+    def ask_for_int(self, message: str, default: int = 1, min: int = 0, max: int = 2147483647,
                     text: str = "Enter integer value"):
         int_val, _ = QInputDialog.getInt(self, text, message, default, min=min, max=max)
         return int_val
