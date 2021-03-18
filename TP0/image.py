@@ -114,7 +114,7 @@ class MyImage:
 
     @staticmethod
     def type_conversion(image, mode: Mode = Mode.HSV):
-        return image.convert(mode)
+        return image.convert(mode.value)
 
     @staticmethod
     def create_square_image(size: (int, int) = (200, 200), mode: str = "L"):

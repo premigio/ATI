@@ -17,6 +17,7 @@ from TP0.main import sizeDict
 
 
 class MainWindow(QWidget):
+    my_image_hsv: object
     pixelY: int
     pixelX: int
     tabLayout: Union[QTabWidget, QTabWidget]
@@ -186,7 +187,11 @@ class MainWindow(QWidget):
 
     def show_hsv(self):
         if self.myImage is not None:
-            MyImage.type_conversion(self.myImage.image, Mode.HSV)
+            new_image = MyImage.type_conversion(self.myImage.image, Mode.HSV)
+            self.my_image_hsv = new_image
+            new_image.show()
+            # old_path = self.myImage.path.split('.')
+            # self.myImage.save_image(new_image, old_path[0] + '_hsv.' + 'png')
         else:
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.showMessage('You must select an image first')
@@ -205,7 +210,7 @@ class MainWindow(QWidget):
 
     def select_image(self):
         options = QFileDialog.Options()
-        image_path, _ = QFileDialog.getOpenFileName(self, "Select image file", "",
+        image_path, _ = QFileDialog.getOpenFileName(self, "Select image file", "../Photos",
                                                     "Images (*.jpg *.jpeg *.raw *.pbm *.ppm *.pgm *.RAW *.png)",
                                                     options=options)
         return self.ask_for_image(image_path=image_path)
