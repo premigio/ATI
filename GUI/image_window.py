@@ -1,7 +1,8 @@
 from PIL.ImageQt import ImageQt
 from PyQt5 import QtCore
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 
 from TP0.image import MyImage
 
