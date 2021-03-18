@@ -185,7 +185,12 @@ class MainWindow(QWidget):
             self.draw_image(self.myImage)
 
     def show_hsv(self):
-        MyImage.type_conversion(self.myImage.image, Mode.HSV)
+        if self.myImage is not None:
+            MyImage.type_conversion(self.myImage.image, Mode.HSV)
+        else:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage('You must select an image first')
+            error_dialog.show()
 
     def operation_between_images(self):
         if self.myImage is None:
@@ -206,14 +211,18 @@ class MainWindow(QWidget):
         return self.ask_for_image(image_path=image_path)
 
     def ask_for_image(self, image_path):
-        file_extension = os.path.splitext(image_path)[1]
-        if file_extension.lower() == ".raw":
-            width = self.ask_for_int("Enter image width", 256)
-            height = self.ask_for_int("Enter image height", 256)
-            self.draw_image(MyImage(image_path, (width, height)))
+        if image_path is not None and image_path != '':
+            file_extension = os.path.splitext(image_path)[1]
+            if file_extension.lower() == ".raw":
+                width = self.ask_for_int("Enter image width", 256)
+                height = self.ask_for_int("Enter image height", 256)
+                self.draw_image(MyImage(image_path, (width, height)))
+            else:
+                self.draw_image(MyImage(image_path))
+                return True
         else:
-            self.draw_image(MyImage(image_path))
-        return True
+            return False
+
 
     def draw_image(self, img: MyImage = None):
         if img is not None:
