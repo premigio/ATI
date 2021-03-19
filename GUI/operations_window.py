@@ -1,7 +1,5 @@
 import os
-
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QInputDialog
-
 from GUI.multiple_images import MultipleImageSelector
 from TP0.image import MyImage
 

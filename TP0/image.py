@@ -85,6 +85,17 @@ class MyImage:
     def get_pixel(image: Image, pos: (int, int)):
         return image.getpixel(pos)
 
+    @staticmethod
+    def is_grey_scale(image: Image):
+        img = image.copy().convert('RGB')
+        w, h = img.size
+        for i in range(w):
+            for j in range(h):
+                r, g, b = img.getpixel((i, j))
+                if r != g != b:
+                    return False
+        return True
+
     def my_get_pixel(self, pos: (int, int)):
         return self.image.getpixel(pos)
 

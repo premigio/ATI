@@ -5,13 +5,15 @@ from typing import Optional, Union
 from PIL.ImageQt import ImageQt
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QPixmap, QIntValidator
-from PyQt5.QtWidgets import QLabel, QMainWindow, QVBoxLayout, QPushButton, QHBoxLayout, QFileDialog, QApplication, \
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QFileDialog, QApplication, \
     QWidget, QInputDialog, QTabWidget, QLineEdit, QMessageBox
 from PyQt5.QtCore import Qt
 
 # Subclass QMainWindow to customise your application's main window
+from GUI import config_window
 from GUI.image_window import ImageWindow
 from GUI.operations_window import OperationsBetweenImages
+from GUI.crop_image_window import CropImage
 from TP0.image import MyImage, Mode
 from TP0.main import sizeDict
 
@@ -41,6 +43,7 @@ class MainWindow(QWidget):
         self.set_layouts()
 
         self.views = []
+        config_window.main_window_global = self
 
     def set_layouts(self):
 
@@ -78,17 +81,23 @@ class MainWindow(QWidget):
         image_dir_layout.addWidget(self.image_path_label)
         image_label_data_layout.addLayout(image_dir_layout)
 
-        # imageHeightLayout = QHBoxLayout()
-        # imageHeightLayout.addWidget(QLabel("Height: ", objectName='title', alignment=Qt.AlignLeft))
-        # self.imageHeightLabel = QLabel("None", alignment=Qt.AlignRight)
-        # imageHeightLayout.addWidget(self.imageHeightLabel)
-        # image_label_data_layout.addLayout(imageHeightLayout)
-        #
-        # imageWidthLayout = QHBoxLayout()
-        # imageWidthLayout.addWidget(QLabel("Width: ", objectName='title', alignment=Qt.AlignLeft))
-        # self.imageWidthLabel = QLabel("None", alignment=Qt.AlignRight)
-        # imageWidthLayout.addWidget(self.imageWidthLabel)
-        # image_label_data_layout.addLayout(imageWidthLayout)
+        image_height_layout = QHBoxLayout()
+        image_height_layout.addWidget(QLabel("Height: ", objectName='title', alignment=Qt.AlignLeft))
+        self.image_height_label = QLabel("None", alignment=Qt.AlignRight)
+        image_height_layout.addWidget(self.image_height_label)
+        image_label_data_layout.addLayout(image_height_layout)
+
+        image_width_layout = QHBoxLayout()
+        image_width_layout.addWidget(QLabel("Width: ", objectName='title', alignment=Qt.AlignLeft))
+        self.image_width_label = QLabel("None", alignment=Qt.AlignRight)
+        image_width_layout.addWidget(self.image_width_label)
+        image_label_data_layout.addLayout(image_width_layout)
+
+        number_of_pixels_layout = QHBoxLayout()
+        number_of_pixels_layout.addWidget(QLabel("Number of pixels: ", objectName='title', alignment=Qt.AlignLeft))
+        self.number_of_pixels_label = QLabel("None", alignment=Qt.AlignRight)
+        number_of_pixels_layout.addWidget(self.number_of_pixels_label)
+        image_label_data_layout.addLayout(number_of_pixels_layout)
 
         image_data_layout.addLayout(image_label_data_layout)
 
@@ -96,6 +105,7 @@ class MainWindow(QWidget):
         image_actions_layout = QVBoxLayout()
         image_actions_layout.setAlignment(Qt.AlignTop)
         image_actions_layout.addWidget(QPushButton("Select image", clicked=self.select_image))
+        image_actions_layout.addWidget(QPushButton("Crop image", clicked=self.crop_image))
         image_actions_layout.addWidget(QPushButton("Convert to HSV", clicked=self.show_hsv))
 
         pixel_actions_layout = QVBoxLayout()
@@ -104,13 +114,11 @@ class MainWindow(QWidget):
         pixel_x_layout = QHBoxLayout()
         pixel_y_layout = QHBoxLayout()
         pixel_x_label = QLabel("X: ")
-        # xIntValidator = QIntValidator(0, self.myImage.dimensions[0]) if self.myImage is not None else QIntValidator()
         self.pixelXLineEdit = QLineEdit()
         self.pixelXLineEdit.setValidator(QIntValidator())
         pixel_x_layout.addWidget(pixel_x_label)
         pixel_x_layout.addWidget(self.pixelXLineEdit)
         pixel_y_label = QLabel("Y: ")
-        # yIntValidator = QIntValidator(0, self.myImage.dimensions[1]) if self.myImage is not None else QIntValidator()
         self.pixelYLineEdit = QLineEdit()
         self.pixelYLineEdit.setValidator(QIntValidator())
         pixel_y_layout.addWidget(pixel_y_label)
@@ -243,8 +251,9 @@ class MainWindow(QWidget):
     def draw_image(self, img: MyImage = None):
         if img is not None:
             self.myImage = img
-            # self.imageWidthLabel.setText(str(img.dimensions[0]))
-            # self.imageHeightLabel.setText(str(img.dimensions[1]))
+            self.image_width_label.setText(str(img.dimensions[0]))
+            self.image_height_label.setText(str(img.dimensions[1]))
+            self.number_of_pixels_label.setText(str(img.dimensions[0]*img.dimensions[1]))
             self.imageNameLabel.setText(img.file_name)
             self.image_path_label.setText(img.path)
 
@@ -254,6 +263,13 @@ class MainWindow(QWidget):
                                                QtCore.Qt.KeepAspectRatio)
         self.image_label.setPixmap(pixmap)
 
+    def crop_image(self):
+        if self.myImage is not None:
+            crop_image_window = CropImage(self.myImage)
+            self.views.append(crop_image_window)
+            crop_image_window.show()
+
+
     def ask_for_int(self, message: str, default: int = 1, min: int = 0, max: int = 2147483647,
                     text: str = "Enter integer value"):
         int_val, _ = QInputDialog.getInt(self, text, message, default, min=min, max=max)
@@ -262,6 +278,7 @@ class MainWindow(QWidget):
 
 def main():
     app = QApplication(sys.argv)
+    config_window.initialize()
     main_window = MainWindow()
 
     sys.exit(app.exec_())
