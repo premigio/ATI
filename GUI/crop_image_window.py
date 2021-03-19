@@ -34,8 +34,8 @@ class CropImage(QWidget):
         number_of_pixels_layout.addWidget(self.number_of_pixels_label)
         main_layout.addLayout(number_of_pixels_layout)
 
-        is_grey_scale = MyImage.is_grey_scale(self.my_image.image)
-        if is_grey_scale:
+        self.is_grey_scale = MyImage.is_grey_scale(self.my_image.image)
+        if self.is_grey_scale:
             grey_avg_layout = QHBoxLayout()
             grey_avg_layout.addWidget(QLabel("Grey average level: ", objectName='title', alignment=Qt.AlignLeft))
             self.avg_label = QLabel("None", alignment=Qt.AlignRight)
@@ -63,15 +63,9 @@ class CropImage(QWidget):
         self.move(qr.topLeft())
 
     def on_crop_finished(self):
-        cropped_image = self.image_cropper.new_img
-        np_img = numpy.array(cropped_image)
-        # Fix me: IndexError: tuple index out of range
-        # self.avg_label = numpy.mean(np_img, axis=2)
-        # Fix me: no probé esto, pero hay que poner la cantidad de pixeles de la foto croppeada
-        # self.number_of_pixels_label = cropped_image.size ?
         self.btn_save.setEnabled(True)
 
-    def on_save_clicked(self):
+    def get_cropped_image(self):
         img = self.my_image.image
         crop_start, crop_end = self.image_cropper.get_crop()
 
@@ -95,6 +89,23 @@ class CropImage(QWidget):
 
         img_left = img.crop(img_left_area)
 
+        return img_left
+
+    def on_save_clicked(self):
+        img_left = self.get_cropped_image()
+
+        # Get image data
+        np_img = numpy.array(img_left)
+
+        if self.is_grey_scale:
+            avg_level = numpy.mean(numpy.mean(np_img, axis=0), axis=0)
+        else:
+            avg_level = numpy.mean(numpy.mean(numpy.mean(np_img, axis=0), axis=0), axis=0)
+
+        self.avg_label.setText(str(avg_level))
+        self.number_of_pixels_label.setText(str(np_img.shape[0] * np_img.shape[1]))
+
+        # Show image
         img_left.show()
         """cropped_img = img.crop(crop_start.x(), crop_start.y(),
                                crop_end.x(), crop_end.y()).show()"""
@@ -104,13 +115,12 @@ class ImageCropper(QWidget):
     def __init__(self, image: MyImage):
         super().__init__()
         self.my_image = image
-        self.new_img = None
         self.image_label = QLabel(alignment=(Qt.AlignVCenter | Qt.AlignHCenter))
         self.image_label.setFixedSize(300, 300)
         self.image_label.setStyleSheet(
             "QLabel { border-style: solid; border-width: 2px; border-color: rgba(0, 0, 0, 0.1); }")
         qim = ImageQt(self.my_image.image)
-        pixmap = QPixmap.fromImage(qim).scaled(self.my_image.dimensions[0], self.my_image.dimensions[1],
+        pixmap = QPixmap.fromImage(qim).scaled(self.image_label.width(), self.image_label.width(),
                                                QtCore.Qt.KeepAspectRatio)
         self.drawn_image = pixmap
         self.image_label.setPixmap(pixmap)
@@ -182,7 +192,6 @@ class ImageCropper(QWidget):
                 new_img.set_pillow_image(img_left)
 
                 config_window.main_window_global.draw_image(new_img)
-                self.new_img = new_img
 
             else:
                 config_window.main_window_global.draw_image(self.my_image)

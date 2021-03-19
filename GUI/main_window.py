@@ -203,7 +203,7 @@ class MainWindow(QWidget):
             pixel = (r, g, b)
         self.myImage.modify_pixel((self.pixelX, self.pixelY), pixel)
         self.myImage.image.show()
-        self.draw_image(self.myImage)
+        self.draw_image()
 
     def show_hsv(self):
         if self.myImage is not None:
@@ -253,10 +253,9 @@ class MainWindow(QWidget):
             self.myImage = img
             self.image_width_label.setText(str(img.dimensions[0]))
             self.image_height_label.setText(str(img.dimensions[1]))
-            self.number_of_pixels_label.setText(str(img.dimensions[0]*img.dimensions[1]))
+            self.number_of_pixels_label.setText(str(img.dimensions[0] * img.dimensions[1]))
             self.imageNameLabel.setText(img.file_name)
             self.image_path_label.setText(img.path)
-
 
         qim = ImageQt(self.myImage.image)
         pixmap = QPixmap.fromImage(qim).scaled(self.image_label.width(), self.image_label.height(),
@@ -268,7 +267,6 @@ class MainWindow(QWidget):
             crop_image_window = CropImage(self.myImage)
             self.views.append(crop_image_window)
             crop_image_window.show()
-
 
     def ask_for_int(self, message: str, default: int = 1, min: int = 0, max: int = 2147483647,
                     text: str = "Enter integer value"):

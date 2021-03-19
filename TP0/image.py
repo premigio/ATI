@@ -43,13 +43,17 @@ class MyImage:
 
     def __init__(self, path: str, raw_prop: (int, int) = None):
         self.path = path
-        self.dimensions = raw_prop
         if path is not None:
             self.file_name = os.path.basename(path)
             self.extension = path.split('.')[-1]
             self.image = self.my_load_image(raw_prop)
             self.pixels = self.image.load()
             # self.image_array = np.array(self.image)
+
+        if raw_prop is not None:
+            self.dimensions = raw_prop
+        else:
+            self.dimensions = self.image.size
 
     def my_load_image(self, raw_prop: (int, int) = (256, 256)):
         if self.extension.lower() == 'raw':
