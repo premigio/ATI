@@ -1,5 +1,5 @@
-# Face Generator
-Face Generation Tool for Memory Experimentation
+# ATI Interface
+Interface Tool for Image Analysis and Experimentation
 
 ### Set up
 
