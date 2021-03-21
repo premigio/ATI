@@ -2,6 +2,7 @@ import os
 import sys
 from typing import Optional, Union
 
+from PIL.Image import Image
 from PIL.ImageQt import ImageQt
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QPixmap, QIntValidator
@@ -16,9 +17,11 @@ from GUI.operations_window import OperationsBetweenImages
 from GUI.crop_image_window import CropImage
 from TP0.image import MyImage, Mode
 from TP0.main import sizeDict
+import GUI.functions_tab as ft
 
 
 class MainWindow(QWidget):
+    stacked_image: Optional[Image]
     my_image_hsv: object
     pixelY: int
     pixelX: int
@@ -159,8 +162,33 @@ class MainWindow(QWidget):
         side_actions_layout.addWidget(QPushButton("Generate circle image", clicked=self.show_circle))
         generator_tab.setLayout(side_actions_layout)
 
+        filter_tab = QWidget()
+        filter_layout = QVBoxLayout()
+        filter_layout.setAlignment(Qt.AlignCenter)
+        filter_layout.addWidget(QPushButton("Rayleigh", clicked=self.show_circle))
+        filter_layout.addWidget(QPushButton("Gaussian", clicked=self.show_circle))
+        filter_layout.addWidget(QPushButton("Exponential", clicked=self.show_circle))
+        filter_layout.addWidget(QPushButton("Mean", clicked=self.show_circle))
+        filter_layout.addWidget(QPushButton("Median", clicked=self.show_circle))
+        filter_layout.addWidget(QPushButton("Salt n Pepper", clicked=self.show_circle))
+
+        filter_tab.setLayout(filter_layout)
+
+        functions_tab = QWidget()
+        functions_layout = QVBoxLayout()
+        functions_layout.setAlignment(Qt.AlignCenter)
+        functions_layout.addWidget(QPushButton("Power with Gamma", clicked=self.power))
+        functions_layout.addWidget(QPushButton("Negative", clicked=self.show_circle))
+        functions_layout.addWidget(QPushButton("Umbral", clicked=self.show_circle))
+        functions_layout.addWidget(QPushButton("Histogram", clicked=self.show_circle))
+        functions_layout.addWidget(QPushButton("Equalized Histogram", clicked=self.show_circle))
+
+        functions_tab.setLayout(functions_layout)
+
         self.tabLayout.addTab(operations_tab, "Operations")
         self.tabLayout.addTab(generator_tab, "Generator")
+        self.tabLayout.addTab(filter_tab, "Filters")
+        self.tabLayout.addTab(functions_tab, "Functions")
         main_layout.addWidget(self.tabLayout)
 
         self.setLayout(main_layout)
@@ -217,6 +245,10 @@ class MainWindow(QWidget):
             error_dialog.showMessage('You must select an image first')
             error_dialog.show()
 
+    def power(self):
+        new_image = ft.show_power(self.myImage, self)
+        self.stacked_image = new_image if new_image is not None else self.stacked_image
+
     def operation_between_images(self):
         if self.myImage is None:
             msg = QMessageBox()
@@ -268,10 +300,17 @@ class MainWindow(QWidget):
             self.views.append(crop_image_window)
             crop_image_window.show()
 
-    def ask_for_int(self, message: str, default: int = 1, min: int = 0, max: int = 2147483647,
+    def ask_for_int(self, message: str, default: int = 1, min_value: int = 0, max_value: int = 2147483647,
                     text: str = "Enter integer value"):
-        int_val, _ = QInputDialog.getInt(self, text, message, default, min=min, max=max)
+        int_val, _ = QInputDialog.getInt(self, text, message, default, min=min_value, max=max_value)
         return int_val
+
+    def ask_for_float(self, message: str, default: float = 1, min_value: float = 0, max_value: float = 2147483647,
+                    text: str = "Enter float value"):
+        float_val, _ = QInputDialog.getDouble(self, text, message, default, min=min_value, max=max_value)
+        return float_val
+
+
 
 
 def main():

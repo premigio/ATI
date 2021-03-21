@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 from PIL import Image, ImageDraw, ImageChops
 import numpy as np
@@ -48,6 +49,7 @@ class MyImage:
             self.extension = path.split('.')[-1]
             self.image = self.my_load_image(raw_prop)
             self.pixels = self.image.load()
+            self.mode = self.image.mode
             # self.image_array = np.array(self.image)
 
         if raw_prop is not None:
@@ -149,4 +151,17 @@ class MyImage:
                       (size[1] / 2) - (size[1] / 4),
                       (size[0] / 2) + (size[0] / 4),
                       (size[1] / 2) + (size[1] / 4)), fill=255)
+        return image
+
+    @staticmethod
+    def numpy_to_image(array: List[List[tuple]], mode: str = "RGB"):
+        w = len(array)
+        h = len(array[0])
+
+        image = Image.new(mode, (w, h))
+        pix = image.load()
+        for i in range(len(array)):
+            for j in range(len(array[i])):
+                pix[(i, j)] = int(array[j][i]) if array[j][i].shape == () else tuple(array[j][i])
+
         return image

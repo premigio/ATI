@@ -35,17 +35,17 @@ class OperationsBetweenImages(QWidget):
         second_layout = QHBoxLayout()
 
         self.product_btn = QPushButton("Product")
-        # self.product_btn.clicked.connect(self.product)
+        self.product_btn.clicked.connect(self.product)
 
         second_layout.addWidget(self.product_btn)
 
         self.addition_btn = QPushButton("Addition")
-        # self.addition_btn.clicked.connect(self.addition)
+        self.addition_btn.clicked.connect(self.addition)
 
         second_layout.addWidget(self.addition_btn)
 
         self.subtraction_btn = QPushButton("Subtraction")
-        # self.subtraction_btn.clicked.connect(self.subtraction)
+        self.subtraction_btn.clicked.connect(self.subtraction)
 
         second_layout.addWidget(self.subtraction_btn)
 
@@ -86,3 +86,18 @@ class OperationsBetweenImages(QWidget):
     def askForInt(self, message: str, default: int = 1, min: int = 1, max: int = 2147483647):
         intVal, _ = QInputDialog.getInt(self, "Enter integer value", message, default, min=min, max=max)
         return intVal
+
+    def product(self):
+        if self.first_image is None or self.second_image is None:
+            return
+        MyImage.multiply_photos(self.first_image.image, self.second_image.image).show()
+
+    def addition(self):
+        if self.first_image is None or self.second_image is None:
+            return
+        MyImage.add_photos(self.first_image.image, self.second_image.image).show()
+
+    def subtraction(self):
+        if self.first_image is None or self.second_image is None:
+            return
+        MyImage.subtract_photos(self.first_image.image, self.second_image.image).show()
