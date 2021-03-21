@@ -1,3 +1,5 @@
+import time
+
 import numpy
 from PIL.ImageQt import ImageQt
 from PyQt5 import QtCore, QtWidgets
@@ -24,3 +26,34 @@ def show_power(image: MyImage, window: MainWindow):
     new_image = power(image, gamma)
     new_image.show()
     return new_image
+
+
+def show_hist(working_image: MyImage, window: MainWindow):
+    hist = ft.histogram(working_image)
+
+    sc = GraphWindow(window, width=5, height=4, dpi=100)
+    sc.axes.bar(range(256), hist, width=1.0, align="edge")
+
+    toolbar = NavigationToolbar(sc, window)
+
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(toolbar)
+    layout.addWidget(sc)
+
+    widget = QtWidgets.QWidget()
+    widget.setLayout(layout)
+    return widget
+
+
+def show_eq_hist(image: MyImage, window: MainWindow):
+    if image is None or window is None:
+        error_dialog = QtWidgets.QErrorMessage()
+        error_dialog.showMessage('You must select an image first')
+        error_dialog.show()
+        return
+    start = time.time()
+    new_image = equalized_histogram2(image, draw_image=True)
+    end = time.time()
+    print(end - start)
+    widget = show_hist(new_image, window)
+    return new_image, widget

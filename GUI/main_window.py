@@ -12,12 +12,19 @@ from PyQt5.QtCore import Qt
 
 # Subclass QMainWindow to customise your application's main window
 from GUI import config_window
+from GUI.graph_window import GraphWindow
 from GUI.image_window import ImageWindow
 from GUI.operations_window import OperationsBetweenImages
 from GUI.crop_image_window import CropImage
 from TP0.image import MyImage, Mode
 from TP0.main import sizeDict
 import GUI.functions_tab as ft
+
+import matplotlib
+
+matplotlib.use('Qt5Agg')
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
 
 
 class MainWindow(QWidget):
@@ -42,6 +49,7 @@ class MainWindow(QWidget):
         self.width = 1000
         self.height = 750
         self.myImage = None
+        self.stacked_image = None
 
         self.set_layouts()
 
@@ -110,6 +118,7 @@ class MainWindow(QWidget):
         image_actions_layout.addWidget(QPushButton("Select image", clicked=self.select_image))
         image_actions_layout.addWidget(QPushButton("Crop image", clicked=self.crop_image))
         image_actions_layout.addWidget(QPushButton("Convert to HSV", clicked=self.show_hsv))
+        image_actions_layout.addWidget(QPushButton(text="Reset Stack Changes", clicked=self.reset_stack))
 
         pixel_actions_layout = QVBoxLayout()
 
@@ -180,8 +189,8 @@ class MainWindow(QWidget):
         functions_layout.addWidget(QPushButton("Power with Gamma", clicked=self.power))
         functions_layout.addWidget(QPushButton("Negative", clicked=self.show_circle))
         functions_layout.addWidget(QPushButton("Umbral", clicked=self.show_circle))
-        functions_layout.addWidget(QPushButton("Histogram", clicked=self.show_circle))
-        functions_layout.addWidget(QPushButton("Equalized Histogram", clicked=self.show_circle))
+        functions_layout.addWidget(QPushButton("Histogram", clicked=self.draw_histogram))
+        functions_layout.addWidget(QPushButton("Equalized Histogram", clicked=self.draw_equalized_histogram))
 
         functions_tab.setLayout(functions_layout)
 
@@ -245,9 +254,31 @@ class MainWindow(QWidget):
             error_dialog.showMessage('You must select an image first')
             error_dialog.show()
 
+    def reset_stack(self):
+        self.stacked_image = self.myImage
+        QMessageBox.about(self, "Success", "Stacked successfully reset")
+
     def power(self):
-        new_image = ft.show_power(self.myImage, self)
-        self.stacked_image = new_image if new_image is not None else self.stacked_image
+        working_image = self.myImage if self.stacked_image is None else self.stacked_image
+        new_image = ft.show_power(working_image, self)
+        self.stacked_image = MyImage.from_image(new_image) if new_image is not None else self.stacked_image
+
+    def draw_histogram(self):
+        if self.myImage is None:
+            return
+
+        working_image = self.myImage if self.stacked_image is None else self.stacked_image
+        widget = ft.show_hist(working_image, self)
+        self.views.append(widget)
+        widget.show()
+
+    def draw_equalized_histogram(self):
+        if self.myImage is None:
+            return
+        working_image = self.myImage if self.stacked_image is None else self.stacked_image
+        new_image, widget = ft.show_eq_hist(working_image, self)
+        self.views.append(widget)
+        widget.show()
 
     def operation_between_images(self):
         if self.myImage is None:
@@ -276,7 +307,8 @@ class MainWindow(QWidget):
                 self.draw_image(MyImage(image_path, (width, height)))
             else:
                 self.draw_image(MyImage(image_path))
-                return True
+            self.stacked_image = MyImage.from_image(self.myImage.image)
+            return True
         else:
             return False
 
@@ -306,11 +338,9 @@ class MainWindow(QWidget):
         return int_val
 
     def ask_for_float(self, message: str, default: float = 1, min_value: float = 0, max_value: float = 2147483647,
-                    text: str = "Enter float value"):
+                      text: str = "Enter float value"):
         float_val, _ = QInputDialog.getDouble(self, text, message, default, min=min_value, max=max_value)
         return float_val
-
-
 
 
 def main():

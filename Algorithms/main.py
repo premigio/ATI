@@ -17,4 +17,5 @@ sizeDict = {
 photo = MyImage('../Photos/LENA.RAW', sizeDict['LENA'])
 photo2 = MyImage('../Photos/Lenaclor.pbm', sizeDict['LENA'])
 
-power(photo2, 1.9).show()
+eq_photo = equalized_histogram(photo, True, True)
+histogram(eq_photo, True)

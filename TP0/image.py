@@ -42,7 +42,7 @@ def photo_combination(image1: Image, image2: Image, function):
 
 class MyImage:
 
-    def __init__(self, path: str, raw_prop: (int, int) = None):
+    def __init__(self, path: str = None, raw_prop: (int, int) = None):
         self.path = path
         if path is not None:
             self.file_name = os.path.basename(path)
@@ -51,11 +51,10 @@ class MyImage:
             self.pixels = self.image.load()
             self.mode = self.image.mode
             # self.image_array = np.array(self.image)
-
-        if raw_prop is not None:
-            self.dimensions = raw_prop
-        else:
-            self.dimensions = self.image.size
+            if raw_prop is not None:
+                self.dimensions = raw_prop
+            else:
+                self.dimensions = self.image.size
 
     def my_load_image(self, raw_prop: (int, int) = (256, 256)):
         if self.extension.lower() == 'raw':
@@ -152,6 +151,18 @@ class MyImage:
                       (size[0] / 2) + (size[0] / 4),
                       (size[1] / 2) + (size[1] / 4)), fill=255)
         return image
+
+    @staticmethod
+    def from_image(image: Image, raw_prop=(256, 256)):
+        ret = MyImage()
+        ret.image = image
+        ret.pixels = ret.image.load()
+        ret.mode = ret.image.mode
+        if ret.mode == 'L':
+            ret.dimensions = raw_prop
+        else:
+            ret.dimensions = ret.image.size
+        return ret
 
     @staticmethod
     def numpy_to_image(array: List[List[tuple]], mode: str = "RGB"):
