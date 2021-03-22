@@ -42,3 +42,23 @@ def show_gaussian_noise(image: MyImage, window):
     new_image = gaussian_additive(image, percentage / 100.0, mean, deviation)
     new_image.image.show()
     return new_image
+
+
+def show_exponential_noise(image: MyImage, window):
+    if image is None or window is None:
+        return
+    lambda_param = window.ask_for_float('Choose a lambda value',
+                                        default=20.0, min_value=0.0, text='Lambda')
+    percentage = window.ask_for_float('Choose a percentage value',
+                                      default=30.0, min_value=0.0, max_value=100.0, text='Percentage')
+    new_image = exponential_multiplicative(image, percentage=percentage / 100.0, lambda_param=lambda_param)
+    new_image.image.show()
+    return new_image
+
+
+def show_salt_n_pepper_noise(image: MyImage, window):
+    if image is None or window is None:
+        return
+    new_image = salt_n_pepper(image)
+    new_image.image.show()
+    return new_image

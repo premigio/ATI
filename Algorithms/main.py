@@ -9,14 +9,8 @@ sizeDict = {
     'FRACTAL': (389, 164),
 }
 
-# lena = MyImage.load_image('/Users/pedroremigiopingarilho/Desktop/ITBA/ATI/ATI/Photos/LENA.RAW', sizeDict['LENA'])
-# lena2 = MyImage.load_image('/Users/pedroremigiopingarilho/Desktop/ITBA/ATI/ATI/Photos/Lenaclor.pbm')  # .show()
-#
-# print(MyImage.get_pixel(lena2, (100, 200)))
-
-photo = MyImage('../Photos/LENA.RAW', sizeDict['LENA'])
-photo2 = MyImage('../Photos/Lenaclor.pbm', sizeDict['LENA'])
-
-photo.image.show()
-eq_photo = rayleigh_multiplicative(photo, 0.2, 0.5)
-eq_photo.image.show()
+if __name__ == '__main__':
+    lena_photo = MyImage('../Photos/LENA.RAW', sizeDict['LENA'])
+    # lena_photo.image.show()
+    noise_photo = salt_n_pepper(lena_photo)
+    noise_photo.image.show()

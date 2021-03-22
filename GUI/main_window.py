@@ -54,7 +54,7 @@ class MainWindow(QWidget):
 
         self.set_layouts()
 
-        self.views = []
+        self.windows = []
         config_window.main_window_global = self
 
     def set_layouts(self):
@@ -119,7 +119,7 @@ class MainWindow(QWidget):
         image_actions_layout.addWidget(QPushButton("Select image", clicked=self.select_image))
         image_actions_layout.addWidget(QPushButton("Crop image", clicked=self.crop_image))
         image_actions_layout.addWidget(QPushButton("Convert to HSV", clicked=self.show_hsv))
-        image_actions_layout.addWidget(QPushButton(text="Reset Stack Changes", clicked=self.reset_stack))
+        image_actions_layout.addWidget(QPushButton(text="Reset main image", clicked=self.reset_stack))
 
         pixel_actions_layout = QVBoxLayout()
 
@@ -161,7 +161,7 @@ class MainWindow(QWidget):
         self.tabLayout = QTabWidget()
         operations_tab = QWidget()
         operations_layout = QHBoxLayout()
-        operations_button = QPushButton("Operations between Images", clicked=self.operation_between_images)
+        operations_button = QPushButton("Operations between images", clicked=self.operation_between_images)
         operations_layout.addWidget(operations_button)
         operations_tab.setLayout(operations_layout)
 
@@ -177,11 +177,10 @@ class MainWindow(QWidget):
         filter_layout.setAlignment(Qt.AlignCenter)
         filter_layout.addWidget(QPushButton("Rayleigh Noise", clicked=self.show_rayleigh))
         filter_layout.addWidget(QPushButton("Gaussian Noise", clicked=self.show_gaussian_noise))
-        filter_layout.addWidget(QPushButton("Exponential Noise", clicked=self.show_circle))
-        filter_layout.addWidget(QPushButton("Salt n Pepper Noise", clicked=self.show_circle))
+        filter_layout.addWidget(QPushButton("Exponential Noise", clicked=self.show_exponential_noise))
+        filter_layout.addWidget(QPushButton("Salt n Pepper Noise", clicked=self.show_salt_n_pepper))
         filter_layout.addWidget(QPushButton("Mean", clicked=self.show_circle))
         filter_layout.addWidget(QPushButton("Median", clicked=self.show_circle))
-
 
         filter_tab.setLayout(filter_layout)
 
@@ -189,30 +188,23 @@ class MainWindow(QWidget):
         functions_layout = QVBoxLayout()
         functions_layout.setAlignment(Qt.AlignCenter)
         functions_layout.addWidget(QPushButton("Power with Gamma", clicked=self.power))
-        functions_layout.addWidget(QPushButton("Negative", clicked=self.show_circle))
-        functions_layout.addWidget(QPushButton("Umbral", clicked=self.show_circle))
+        functions_layout.addWidget(QPushButton("Negative", clicked=self.show_negative))
+        functions_layout.addWidget(QPushButton("Threshold", clicked=self.show_threshold))
         functions_layout.addWidget(QPushButton("Histogram", clicked=self.draw_histogram))
         functions_layout.addWidget(QPushButton("Equalized Histogram", clicked=self.draw_equalized_histogram))
 
         functions_tab.setLayout(functions_layout)
 
         self.tabLayout.addTab(operations_tab, "Operations")
-        self.tabLayout.addTab(generator_tab, "Generator")
-        self.tabLayout.addTab(filter_tab, "Filter Noise")
-        self.tabLayout.addTab(functions_tab, "Functions")
+        self.tabLayout.addTab(generator_tab, "Generators")
+        self.tabLayout.addTab(filter_tab, "Filters and noise")
+        self.tabLayout.addTab(functions_tab, "Extra functions")
         main_layout.addWidget(self.tabLayout)
 
         self.setLayout(main_layout)
         self.show()
 
-    @staticmethod
-    def show_square():
-        MyImage.create_square_image().show()
-
-    @staticmethod
-    def show_circle():
-        MyImage.create_circle_image().show()
-
+    # ------------------------- MAIN image functions --------------------------------------------
     def get_pixel(self):
         if self.pixelXLineEdit.text() == '' or self.pixelYLineEdit.text() == '':
             return
@@ -223,7 +215,7 @@ class MainWindow(QWidget):
             if pixel:
                 self.pixelLabel.setText(str(pixel))
         else:
-            # no anda, qmessage tampoco
+            # fix me: no anda, qmessage tampoco
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.showMessage('You must select an image first')
             error_dialog.show()
@@ -255,53 +247,6 @@ class MainWindow(QWidget):
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.showMessage('You must select an image first')
             error_dialog.show()
-
-    def reset_stack(self):
-        self.stacked_image = self.myImage
-        QMessageBox.about(self, "Success", "Stacked successfully reset")
-
-    def power(self):
-        working_image = self.myImage if self.stacked_image is None else self.stacked_image
-        new_image = ft.show_power(working_image, self)
-        self.stacked_image = MyImage.from_image(new_image) if new_image is not None else self.stacked_image
-
-    def draw_histogram(self):
-        if self.myImage is None:
-            return
-
-        working_image = self.myImage if self.stacked_image is None else self.stacked_image
-        widget = ft.show_hist(working_image, self)
-        self.views.append(widget)
-        widget.show()
-
-    def draw_equalized_histogram(self):
-        if self.myImage is None:
-            return
-        working_image = self.myImage if self.stacked_image is None else self.stacked_image
-        new_image, widget = ft.show_eq_hist(working_image, self)
-        self.views.append(widget)
-        widget.show()
-
-    def show_rayleigh(self):
-        working_image = self.myImage if self.stacked_image is None else self.stacked_image
-        new_image = nt.show_rayleigh(working_image, self)
-        self.stacked_image = new_image if new_image is not None else self.stacked_image
-
-    def show_gaussian_noise(self):
-        working_image = self.myImage if self.stacked_image is None else self.stacked_image
-        new_image = nt.show_gaussian_noise(working_image, self)
-        self.stacked_image = new_image if new_image is not None else self.stacked_image
-
-    def operation_between_images(self):
-        if self.myImage is None:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Critical)
-            msg.setText("Error")
-            msg.setInformativeText('More information')
-            msg.setWindowTitle("Error")
-            return msg
-        else:
-            self.views.append(OperationsBetweenImages())
 
     def select_image(self):
         options = QFileDialog.Options()
@@ -338,12 +283,77 @@ class MainWindow(QWidget):
                                                QtCore.Qt.KeepAspectRatio)
         self.image_label.setPixmap(pixmap)
 
+    def reset_stack(self):
+        self.stacked_image = self.myImage
+        QMessageBox.about(self, "Success", "Stacked successfully reset")
+
+    # Generic function for extra functions tab
+    def show_extra_function(self, fn):
+        working_image = self.myImage if self.stacked_image is None else self.stacked_image
+        return fn(working_image, self)
+
+    def power(self):
+        new_image = self.show_extra_function(ft.show_power)
+        self.stacked_image = MyImage.from_image(new_image) if new_image is not None else self.stacked_image
+
+    def show_negative(self):
+        new_image = self.show_extra_function(ft.show_negative)
+        self.stacked_image = MyImage.from_image(new_image) if new_image is not None else self.stacked_image
+
+    def show_threshold(self):
+        new_image = self.show_extra_function(ft.show_threshold)
+        self.stacked_image = MyImage.from_image(new_image) if new_image is not None else self.stacked_image
+
+    def draw_histogram(self):
+        widget = self.show_extra_function(ft.show_hist)
+        self.windows.append(widget)
+        widget.show()
+
+    def draw_equalized_histogram(self):
+        new_image, widget = self.show_extra_function(ft.show_eq_hist)
+        self.windows.append(widget)
+        widget.show()
+
+    # ------------------------- GENERATORS ---------------------------------------------------
+    @staticmethod
+    def show_square():
+        MyImage.create_square_image().show()
+
+    @staticmethod
+    def show_circle():
+        MyImage.create_circle_image().show()
+
+    # ------------------------- NOISES ----------------------------------------------------
+    # Generic function for noises
+    def show_noise(self, noise):
+        working_image = self.myImage if self.stacked_image is None else self.stacked_image
+        new_image = noise(working_image, self)
+        self.stacked_image = new_image if new_image is not None else self.stacked_image
+
+    def show_rayleigh(self):
+        self.show_noise(nt.show_rayleigh)
+
+    def show_gaussian_noise(self):
+        self.show_noise(nt.show_gaussian_noise)
+
+    def show_exponential_noise(self):
+        self.show_noise(nt.show_exponential_noise)
+
+    def show_salt_n_pepper(self):
+        self.show_noise(nt.show_salt_n_pepper_noise)
+
+    # ------------------------- OPERATORS ---------------------------------------------------
+    def operation_between_images(self):
+        self.windows.append(OperationsBetweenImages())
+
+    # ------------------------- CROP ---------------------------------------------------------
     def crop_image(self):
         if self.myImage is not None:
             crop_image_window = CropImage(self.myImage)
-            self.views.append(crop_image_window)
+            self.windows.append(crop_image_window)
             crop_image_window.show()
 
+    # ------------------------- UTILS ---------------------------------------------------------------------
     def ask_for_int(self, message: str, default: int = 1, min_value: int = 0, max_value: int = 2147483647,
                     text: str = "Enter integer value"):
         int_val, _ = QInputDialog.getInt(self, text, message, default, min=min_value, max=max_value)

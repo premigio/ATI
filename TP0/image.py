@@ -176,3 +176,47 @@ class MyImage:
                 pix[(i, j)] = int(array[j][i]) if array[j][i].shape == () else tuple(array[j][i])
 
         return image
+
+    @staticmethod
+    def negative(img: Image):
+        image = img.copy()
+        greyscale = MyImage.is_grey_scale(img)
+
+        for i in range(0, image.size[0] - 1):
+            for j in range(0, image.size[1] - 1):
+                pixel_colors = image.getpixel((i, j))
+                if greyscale:
+                    # 255 is the highest value
+                    grey = 255 - pixel_colors
+                    new_pixel = (grey)
+                else:
+                    red = 255 - pixel_colors[0]
+                    green = 255 - pixel_colors[1]
+                    blue = 255 - pixel_colors[2]
+                    new_pixel = (red, green, blue)
+
+                image.putpixel((i, j), new_pixel)
+
+        return image
+
+    @staticmethod
+    def threshold(img: Image, threshold: int):
+        image = img.copy()
+        greyscale = MyImage.is_grey_scale(img)
+
+        for i in range(0, image.size[0] - 1):
+            for j in range(0, image.size[1] - 1):
+                pixel_colors = image.getpixel((i, j))
+
+                if greyscale:
+                    grey = 0 if pixel_colors <= threshold else 255
+                    new_pixel = (grey)
+                else:
+                    red = 0 if pixel_colors[0] <= threshold else 255
+                    green = 0 if pixel_colors[1] <= threshold else 255
+                    blue = 0 if pixel_colors[2] <= threshold else 255
+                    new_pixel = (red, green, blue)
+
+                image.putpixel((i, j), new_pixel)
+
+        return image

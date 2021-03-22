@@ -57,3 +57,25 @@ def show_eq_hist(image: MyImage, window: MainWindow):
     print(end - start)
     widget = show_hist(new_image, window)
     return new_image, widget
+
+
+def show_negative(image: MyImage, window: MainWindow):
+    if image is None or window is None:
+        # fix me: show error
+        return
+    new_img = MyImage.negative(image.image)
+    new_img.show()
+    return new_img
+
+
+def show_threshold(image: MyImage, window: MainWindow):
+    if image is None or window is None:
+        # fix me: show error
+        return
+
+    threshold_val = window.ask_for_float('Choose a threshold value',
+                                        default=100.0, min_value=0.0, text='Threshold')
+
+    new_img = MyImage.threshold(image.image, threshold=threshold_val)
+    new_img.show()
+    return new_img
