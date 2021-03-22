@@ -19,6 +19,7 @@ from GUI.crop_image_window import CropImage
 from TP0.image import MyImage, Mode
 from TP0.main import sizeDict
 import GUI.functions_tab as ft
+import GUI.noises_filters_tab as nt
 
 import matplotlib
 
@@ -174,12 +175,13 @@ class MainWindow(QWidget):
         filter_tab = QWidget()
         filter_layout = QVBoxLayout()
         filter_layout.setAlignment(Qt.AlignCenter)
-        filter_layout.addWidget(QPushButton("Rayleigh", clicked=self.show_circle))
-        filter_layout.addWidget(QPushButton("Gaussian", clicked=self.show_circle))
-        filter_layout.addWidget(QPushButton("Exponential", clicked=self.show_circle))
+        filter_layout.addWidget(QPushButton("Rayleigh Noise", clicked=self.show_rayleigh))
+        filter_layout.addWidget(QPushButton("Gaussian Noise", clicked=self.show_gaussian_noise))
+        filter_layout.addWidget(QPushButton("Exponential Noise", clicked=self.show_circle))
+        filter_layout.addWidget(QPushButton("Salt n Pepper Noise", clicked=self.show_circle))
         filter_layout.addWidget(QPushButton("Mean", clicked=self.show_circle))
         filter_layout.addWidget(QPushButton("Median", clicked=self.show_circle))
-        filter_layout.addWidget(QPushButton("Salt n Pepper", clicked=self.show_circle))
+
 
         filter_tab.setLayout(filter_layout)
 
@@ -196,7 +198,7 @@ class MainWindow(QWidget):
 
         self.tabLayout.addTab(operations_tab, "Operations")
         self.tabLayout.addTab(generator_tab, "Generator")
-        self.tabLayout.addTab(filter_tab, "Filters")
+        self.tabLayout.addTab(filter_tab, "Filter Noise")
         self.tabLayout.addTab(functions_tab, "Functions")
         main_layout.addWidget(self.tabLayout)
 
@@ -279,6 +281,16 @@ class MainWindow(QWidget):
         new_image, widget = ft.show_eq_hist(working_image, self)
         self.views.append(widget)
         widget.show()
+
+    def show_rayleigh(self):
+        working_image = self.myImage if self.stacked_image is None else self.stacked_image
+        new_image = nt.show_rayleigh(working_image, self)
+        self.stacked_image = new_image if new_image is not None else self.stacked_image
+
+    def show_gaussian_noise(self):
+        working_image = self.myImage if self.stacked_image is None else self.stacked_image
+        new_image = nt.show_gaussian_noise(working_image, self)
+        self.stacked_image = new_image if new_image is not None else self.stacked_image
 
     def operation_between_images(self):
         if self.myImage is None:

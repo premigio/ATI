@@ -21,7 +21,7 @@ def show_power(image: MyImage, window: MainWindow):
         return
     gamma = 1.0
     while gamma == 1.0:
-        gamma = window.ask_for_float('Choose a Gamma Value different form one',
+        gamma = window.ask_for_float('Choose a Gamma Value different from one',
                                      default=0.9, min_value=0.0, max_value=2.0, text='Gamma')
     new_image = power(image, gamma)
     new_image.show()

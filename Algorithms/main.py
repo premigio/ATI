@@ -1,6 +1,6 @@
 from TP0.image import MyImage
 from Algorithms.Functions import *
-
+from Algorithms.Noises import *
 sizeDict = {
     'LENA': (256, 256),
     'GIRL': (389, 164),
@@ -17,5 +17,6 @@ sizeDict = {
 photo = MyImage('../Photos/LENA.RAW', sizeDict['LENA'])
 photo2 = MyImage('../Photos/Lenaclor.pbm', sizeDict['LENA'])
 
-eq_photo = equalized_histogram(photo, True, True)
-histogram(eq_photo, True)
+photo.image.show()
+eq_photo = rayleigh_multiplicative(photo, 0.2, 0.5)
+eq_photo.image.show()

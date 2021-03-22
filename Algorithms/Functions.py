@@ -63,6 +63,7 @@ def equalized_histogram2(image: MyImage, draw_hist: bool = False, draw_image: bo
         final_image.show()
     return MyImage.from_image(final_image, image.dimensions)
 
+
 def draw_histogram(hist):
     plt.bar(range(256), hist, width=1.0, align="edge")
     plt.show()
