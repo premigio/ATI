@@ -1,6 +1,9 @@
 from TP0.image import MyImage
 from Algorithms.Functions import *
 from Algorithms.Noises import *
+from Algorithms.Filters import *
+
+
 sizeDict = {
     'LENA': (256, 256),
     'GIRL': (389, 164),
