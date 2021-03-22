@@ -166,13 +166,13 @@ class MyImage:
 
     @staticmethod
     def numpy_to_image(array: List[List[tuple]], mode: str = "RGB"):
-        w = len(array)
-        h = len(array[0])
+        h = len(array)
+        w = len(array[0])
 
         image = Image.new(mode, (w, h))
         pix = image.load()
-        for i in range(len(array)):
-            for j in range(len(array[i])):
+        for i in range(w):
+            for j in range(h):
                 pix[(i, j)] = int(array[j][i]) if array[j][i].shape == () else tuple(array[j][i])
 
         return image

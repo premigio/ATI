@@ -21,9 +21,9 @@ def power(image: MyImage, gamma: float):
 def histogram(image: MyImage, draw: bool = False):  # solo para color gris
     hist = [0] * 256
 
-    height, width = image.dimensions
-    for i in range(height):
-        for j in range(width):
+    width, height = image.image.size
+    for i in range(width):
+        for j in range(height):
             hist[image.my_get_pixel((i, j))] += 1
 
     hist = [value / (height * width) for value in hist]
@@ -39,9 +39,9 @@ def equalized_histogram(my_image: MyImage, draw_hist: bool = False, draw_image: 
     image = MyImage.from_image(my_image.image.copy())
     hist = histogram(image, draw_hist)
     cdf = np.cumsum(hist)
-    height, width = image.dimensions
-    for i in range(height):
-        for j in range(width):
+    height, width = image.image.size
+    for i in range(width):
+        for j in range(height):
             image.modify_pixel((i, j),
                                int(0.5 + (cdf[image.my_get_pixel((i, j))] - min(cdf)) * 255.0 / (1 - min(cdf))))
     if draw_image:
@@ -54,9 +54,9 @@ def equalized_histogram2(image: MyImage, draw_hist: bool = False, draw_image: bo
     pixel_array = np.array(image.image)
     hist = histogram(image, draw_hist)
     cdf = np.cumsum(hist)
-    height, width = image.dimensions
-    for i in range(height):
-        for j in range(width):
+    height, width = image.image.size
+    for i in range(width):
+        for j in range(height):
             pixel_array[i][j] = 0.5 + (cdf[pixel_array[i][j]] - min(cdf)) * 255.0 / (1 - min(cdf))
     final_image = MyImage.numpy_to_image(pixel_array.astype(int), image.mode)
     if draw_image:

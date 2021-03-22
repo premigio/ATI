@@ -9,7 +9,7 @@ from TP0.image import MyImage, normalization
 
 
 def noise_apply(image: MyImage, percentage: float, add_multiply, noise_function):
-    h, w = image.dimensions
+    w, h = image.image.size
     pixel_array = np.array(image.image)
 
     for i in range(h):
