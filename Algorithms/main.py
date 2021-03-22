@@ -1,6 +1,9 @@
 from TP0.image import MyImage
 from Algorithms.Functions import *
 from Algorithms.Noises import *
+from Algorithms.Filters import *
+
+
 sizeDict = {
     'LENA': (256, 256),
     'GIRL': (389, 164),
@@ -14,9 +17,11 @@ sizeDict = {
 #
 # print(MyImage.get_pixel(lena2, (100, 200)))
 
-photo = MyImage('../Photos/LENA.RAW', sizeDict['LENA'])
+photo = MyImage('../Photos/BARCO.RAW', sizeDict['BARCO'])
 photo2 = MyImage('../Photos/Lenaclor.pbm', sizeDict['LENA'])
 
-photo.image.show()
-eq_photo = rayleigh_multiplicative(photo, 0.2, 0.5)
+a = photo.image.split()
+b = photo2.image.split()
+# photo.image.show()
+eq_photo = gaussian_filter(photo, 3)
 eq_photo.image.show()
