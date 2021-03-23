@@ -14,8 +14,9 @@ from PyQt5.QtCore import Qt
 from GUI import config_window
 from GUI.graph_window import GraphWindow
 from GUI.image_window import ImageWindow
-from GUI.operations_window import OperationsBetweenImages
 from GUI.crop_image_window import CropImage
+from GUI.mask_window import MaskImage
+from GUI.multiple_images import MultipleImageSelector
 from TP0.image import MyImage, Mode
 from TP0.main import sizeDict
 import GUI.functions_tab as ft
@@ -33,7 +34,6 @@ class MainWindow(QWidget):
     my_image_hsv: object
     pixelY: int
     pixelX: int
-    tabLayout: Union[QTabWidget, QTabWidget]
     pixelLabel: Union[QLabel, QLabel]
     pixelYLineEdit: Union[QLineEdit, QLineEdit]
     pixelXLineEdit: Union[QLineEdit, QLineEdit]
@@ -41,9 +41,12 @@ class MainWindow(QWidget):
     imageNameLabel: Union[QLabel, QLabel]
     image_label: Union[QLabel, QLabel]
     myImage: Optional[MyImage]
+    operations_layout: Union[QVBoxLayout, QHBoxLayout]
+    op_first_img: MyImage
+    op_second_img: MyImage
 
-    def __init__(self, *args, **kwargs):
-        super(MainWindow, self).__init__(*args, **kwargs)
+    def __init__(self):
+        super(MainWindow, self).__init__()
         self.title = 'ATI Interface'
         self.left = 200
         self.top = 100
@@ -51,6 +54,8 @@ class MainWindow(QWidget):
         self.height = 750
         self.myImage = None
         self.stacked_image = None
+        self.op_first_img = None
+        self.op_second_img = None
 
         self.set_layouts()
 
@@ -63,8 +68,6 @@ class MainWindow(QWidget):
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         main_layout = QHBoxLayout()
-
-        # IMAGE 1
 
         # Layout for image visualization
         image_preview_and_data_layout = QVBoxLayout()
@@ -114,63 +117,20 @@ class MainWindow(QWidget):
         image_data_layout.addLayout(image_label_data_layout)
 
         # Layout for image actions
-        image_actions_layout = QVBoxLayout()
-        image_actions_layout.setAlignment(Qt.AlignTop)
-        image_actions_layout.addWidget(QPushButton("Select image", clicked=self.select_image))
-        image_actions_layout.addWidget(QPushButton("Crop image", clicked=self.crop_image))
-        image_actions_layout.addWidget(QPushButton("Convert to HSV", clicked=self.show_hsv))
-        image_actions_layout.addWidget(QPushButton(text="Reset main image", clicked=self.reset_stack))
+        self.image_actions_layout = QVBoxLayout()
+        self.image_actions_layout.setAlignment(Qt.AlignTop)
+        self.image_actions_layout.addWidget(QPushButton("Select image", clicked=self.select_image))
 
-        pixel_actions_layout = QVBoxLayout()
-
-        pixel_input_layout = QVBoxLayout()
-        pixel_x_layout = QHBoxLayout()
-        pixel_y_layout = QHBoxLayout()
-        pixel_x_label = QLabel("X: ")
-        self.pixelXLineEdit = QLineEdit()
-        self.pixelXLineEdit.setValidator(QIntValidator())
-        pixel_x_layout.addWidget(pixel_x_label)
-        pixel_x_layout.addWidget(self.pixelXLineEdit)
-        pixel_y_label = QLabel("Y: ")
-        self.pixelYLineEdit = QLineEdit()
-        self.pixelYLineEdit.setValidator(QIntValidator())
-        pixel_y_layout.addWidget(pixel_y_label)
-        pixel_y_layout.addWidget(self.pixelYLineEdit)
-        pixel_input_layout.addLayout(pixel_x_layout)
-        pixel_input_layout.addLayout(pixel_y_layout)
-
-        get_pixel_layout = QVBoxLayout()
-        get_pixel_layout.addWidget(QPushButton("Get pixel", clicked=self.get_pixel))
-        show_pixel_layout = QHBoxLayout()
-        show_pixel_title = QLabel("Pixel: ", alignment=Qt.AlignLeft)
-        self.pixelLabel = QLabel("", alignment=Qt.AlignRight)
-        show_pixel_layout.addWidget(show_pixel_title)
-        show_pixel_layout.addWidget(self.pixelLabel)
-        get_pixel_layout.addLayout(show_pixel_layout)
-
-        pixel_actions_layout.addLayout(pixel_input_layout)
-        pixel_actions_layout.addWidget(QPushButton("Set pixel", clicked=self.set_pixel))
-        pixel_actions_layout.addLayout(get_pixel_layout)
-        image_actions_layout.addLayout(pixel_actions_layout)
-
-        image_data_layout.addLayout(image_actions_layout)
+        image_data_layout.addLayout(self.image_actions_layout)
         image_preview_and_data_layout.addLayout(image_data_layout)
         main_layout.addLayout(image_preview_and_data_layout)
 
         # Tabs
-        self.tabLayout = QTabWidget()
+        tabLayout = QTabWidget()
         operations_tab = QWidget()
-        operations_layout = QHBoxLayout()
-        operations_button = QPushButton("Operations between images", clicked=self.operation_between_images)
-        operations_layout.addWidget(operations_button)
-        operations_tab.setLayout(operations_layout)
-
-        generator_tab = QWidget()
-        side_actions_layout = QVBoxLayout()
-        side_actions_layout.setAlignment(Qt.AlignCenter)
-        side_actions_layout.addWidget(QPushButton("Generate square image", clicked=self.show_square))
-        side_actions_layout.addWidget(QPushButton("Generate circle image", clicked=self.show_circle))
-        generator_tab.setLayout(side_actions_layout)
+        self.operations_layout = QVBoxLayout()
+        self.operations_layout.addWidget(QPushButton("Select images", clicked=self.select_images))
+        operations_tab.setLayout(self.operations_layout)
 
         filter_tab = QWidget()
         filter_layout = QVBoxLayout()
@@ -179,14 +139,15 @@ class MainWindow(QWidget):
         filter_layout.addWidget(QPushButton("Gaussian Noise", clicked=self.show_gaussian_noise))
         filter_layout.addWidget(QPushButton("Exponential Noise", clicked=self.show_exponential_noise))
         filter_layout.addWidget(QPushButton("Salt n Pepper Noise", clicked=self.show_salt_n_pepper))
-        filter_layout.addWidget(QPushButton("Mean", clicked=self.show_circle))
-        filter_layout.addWidget(QPushButton("Median", clicked=self.show_circle))
+        filter_layout.addWidget(QPushButton("Masks and Filters", clicked=self.show_filters))
 
         filter_tab.setLayout(filter_layout)
 
         functions_tab = QWidget()
         functions_layout = QVBoxLayout()
         functions_layout.setAlignment(Qt.AlignCenter)
+        functions_layout.addWidget(QPushButton("Generate square image", clicked=self.show_square))
+        functions_layout.addWidget(QPushButton("Generate circle image", clicked=self.show_circle))
         functions_layout.addWidget(QPushButton("Power with Gamma", clicked=self.power))
         functions_layout.addWidget(QPushButton("Negative", clicked=self.show_negative))
         functions_layout.addWidget(QPushButton("Threshold", clicked=self.show_threshold))
@@ -195,11 +156,10 @@ class MainWindow(QWidget):
 
         functions_tab.setLayout(functions_layout)
 
-        self.tabLayout.addTab(operations_tab, "Operations")
-        self.tabLayout.addTab(generator_tab, "Generators")
-        self.tabLayout.addTab(filter_tab, "Filters and noise")
-        self.tabLayout.addTab(functions_tab, "Extra functions")
-        main_layout.addWidget(self.tabLayout)
+        tabLayout.addTab(operations_tab, "Operations")
+        tabLayout.addTab(filter_tab, "Filters and noise")
+        tabLayout.addTab(functions_tab, "More functions")
+        main_layout.addWidget(tabLayout)
 
         self.setLayout(main_layout)
         self.show()
@@ -253,7 +213,51 @@ class MainWindow(QWidget):
         image_path, _ = QFileDialog.getOpenFileName(self, "Select image file", "../Photos",
                                                     "Images (*.jpg *.jpeg *.raw *.pbm *.ppm *.pgm *.RAW *.png)",
                                                     options=options)
-        return self.ask_for_image(image_path=image_path)
+        new_img = self.ask_for_image(image_path=image_path)
+
+        # If its the first time uploading an image
+        if self.stacked_image is None:
+            self.init_main_gui()
+
+        if new_img is not None:
+            self.draw_image(new_img)
+            self.stacked_image = new_img
+
+    def init_main_gui(self):
+        self.image_actions_layout.addWidget(QPushButton("Crop image", clicked=self.crop_image))
+        self.image_actions_layout.addWidget(QPushButton("Convert to HSV", clicked=self.show_hsv))
+        self.image_actions_layout.addWidget(QPushButton(text="Reset main image", clicked=self.reset_stack))
+        pixel_actions_layout = QVBoxLayout()
+
+        pixel_input_layout = QVBoxLayout()
+        pixel_x_layout = QHBoxLayout()
+        pixel_y_layout = QHBoxLayout()
+        pixel_x_label = QLabel("X: ")
+        self.pixelXLineEdit = QLineEdit()
+        self.pixelXLineEdit.setValidator(QIntValidator())
+        pixel_x_layout.addWidget(pixel_x_label)
+        pixel_x_layout.addWidget(self.pixelXLineEdit)
+        pixel_y_label = QLabel("Y: ")
+        self.pixelYLineEdit = QLineEdit()
+        self.pixelYLineEdit.setValidator(QIntValidator())
+        pixel_y_layout.addWidget(pixel_y_label)
+        pixel_y_layout.addWidget(self.pixelYLineEdit)
+        pixel_input_layout.addLayout(pixel_x_layout)
+        pixel_input_layout.addLayout(pixel_y_layout)
+
+        show_pixel_layout = QHBoxLayout()
+        show_pixel_title = QLabel("Pixel: ", alignment=Qt.AlignLeft)
+        self.pixelLabel = QLabel("", alignment=Qt.AlignRight)
+        show_pixel_layout.addWidget(show_pixel_title)
+        show_pixel_layout.addWidget(self.pixelLabel)
+
+        pixel_actions_layout.addLayout(pixel_input_layout)
+        pixel_actions_layout.addWidget(QPushButton("Set pixel", clicked=self.set_pixel))
+        pixel_actions_layout.addWidget(QPushButton("Get pixel", clicked=self.get_pixel))
+        pixel_actions_layout.addLayout(show_pixel_layout)
+        self.image_actions_layout.addLayout(pixel_actions_layout)
+
+        self.image_actions_layout.update()
 
     def ask_for_image(self, image_path):
         if image_path is not None and image_path != '':
@@ -261,13 +265,9 @@ class MainWindow(QWidget):
             if file_extension.lower() == ".raw":
                 width = self.ask_for_int("Enter image width", 256)
                 height = self.ask_for_int("Enter image height", 256)
-                self.draw_image(MyImage(image_path, (width, height)))
+                return MyImage(image_path, (width, height))
             else:
-                self.draw_image(MyImage(image_path))
-            self.stacked_image = MyImage.from_image(self.myImage.image)
-            return True
-        else:
-            return False
+                return MyImage(image_path)
 
     def draw_image(self, img: MyImage = None):
         if img is not None:
@@ -323,7 +323,7 @@ class MainWindow(QWidget):
     def show_circle():
         MyImage.create_circle_image().show()
 
-    # ------------------------- NOISES ----------------------------------------------------
+    # ------------------------- NOISES and FILTERS -----------------------------------------------
     # Generic function for noises
     def show_noise(self, noise):
         working_image = self.myImage if self.stacked_image is None else self.stacked_image
@@ -342,9 +342,46 @@ class MainWindow(QWidget):
     def show_salt_n_pepper(self):
         self.show_noise(nt.show_salt_n_pepper_noise)
 
-    # ------------------------- OPERATORS ---------------------------------------------------
-    def operation_between_images(self):
-        self.windows.append(OperationsBetweenImages())
+    def show_filters(self):
+        if self.myImage is not None:
+            mask_image_window = MaskImage(self.myImage)
+            self.windows.append(mask_image_window)
+            mask_image_window.show()
+
+    # ------------------------- OPERATORS ---------------------------------------------------------
+    def select_images(self):
+        def handler(paths):
+            first_image = self.ask_for_image(paths[0])
+            second_image = MyImage(paths[1], first_image.dimensions)
+            self.set_operator_images(first_image, second_image)
+
+        MultipleImageSelector(["First image", "Second image"], "Submit",
+                              "Images selection", handler)
+
+    def set_operator_images(self, first_image, second_image):
+        if self.op_second_img is None and self.op_first_img is None \
+                and first_image is not None and second_image is not None:
+            self.init_operations_gui()
+
+        self.op_first_img = first_image
+        self.op_second_img = second_image
+
+    def init_operations_gui(self):
+        def product():
+            MyImage.multiply_photos(self.op_first_img.image, self.op_second_img.image).show()
+
+        def addition():
+            MyImage.add_photos(self.op_first_img.image, self.op_second_img.image).show()
+
+        def subtraction():
+            MyImage.subtract_photos(self.op_first_img.image, self.op_second_img.image).show()
+
+        btns_layout = QVBoxLayout()
+        btns_layout.addWidget(QPushButton("Product", clicked=product))
+        btns_layout.addWidget(QPushButton("Addition", clicked=addition))
+        btns_layout.addWidget(QPushButton("Subtraction", clicked=subtraction))
+        self.operations_layout.addLayout(btns_layout)
+        self.update()
 
     # ------------------------- CROP ---------------------------------------------------------
     def crop_image(self):
@@ -352,6 +389,13 @@ class MainWindow(QWidget):
             crop_image_window = CropImage(self.myImage)
             self.windows.append(crop_image_window)
             crop_image_window.show()
+
+    # ------------------------- MASK ---------------------------------------------------------
+    def mask_image(self):
+        if self.myImage is not None:
+            mask_image_window = MaskImage(self.myImage)
+            self.windows.append(mask_image_window)
+            mask_image_window.show()
 
     # ------------------------- UTILS ---------------------------------------------------------------------
     def ask_for_int(self, message: str, default: int = 1, min_value: int = 0, max_value: int = 2147483647,

@@ -31,7 +31,7 @@ class MultipleImageSelector(QWidget):
             file_label_layout.addWidget(file_name_label)
             self.paths_labels.append(file_name_label)
 
-            select_file_button = QPushButton("Select from filesystem")
+            select_file_button = QPushButton("Select file")
             select_file_button.clicked.connect(self.select_file_button_clicked(i))
 
             main_layout.addLayout(file_label_layout)
@@ -59,8 +59,8 @@ class MultipleImageSelector(QWidget):
         def add_path():
             options = QFileDialog.Options()
             # options |= QFileDialog.DontUseNativeDialog
-            file_path, _ = QFileDialog.getOpenFileName(self, "Select image file", "",
-                                                       "Images (*.jpg *.raw *.pbm *.ppm *.pgm *.RAW *.png)",
+            file_path, _ = QFileDialog.getOpenFileName(self, "Select image file", "../Photos",
+                                                       "Images (*.jpg *.jpeg *.raw *.pbm *.ppm *.pgm *.RAW *.png)",
                                                        options=options)
             if file_path:
                 self.paths[path_index] = file_path

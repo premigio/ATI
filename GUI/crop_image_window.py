@@ -9,108 +9,6 @@ from GUI import config_window
 from TP0.image import MyImage
 
 
-class CropImage(QWidget):
-    def __init__(self, img: MyImage = None, window_title: str = None):
-        super().__init__()
-        self.my_image = img
-        self.set_layouts(window_title)
-
-    def set_layouts(self, window_title: str = None):
-        width, height = self.my_image.dimensions
-        self.setGeometry(30, 30, width, height)
-        self.setWindowTitle(self.my_image.file_name if window_title is None else window_title)
-        self.center()
-
-        main_layout = QVBoxLayout()
-
-        self.image_cropper = ImageCropper(self.my_image)
-        self.image_cropper.crop_finished(self.on_crop_finished)
-        main_layout.addWidget(self.image_cropper)
-
-        # Labels for number of pixels, average grey and colour levels
-        number_of_pixels_layout = QHBoxLayout()
-        number_of_pixels_layout.addWidget(QLabel("Number of pixels: ", objectName='title', alignment=Qt.AlignLeft))
-        self.number_of_pixels_label = QLabel("None", alignment=Qt.AlignRight)
-        number_of_pixels_layout.addWidget(self.number_of_pixels_label)
-        main_layout.addLayout(number_of_pixels_layout)
-
-        self.is_grey_scale = MyImage.is_grey_scale(self.my_image.image)
-        if self.is_grey_scale:
-            grey_avg_layout = QHBoxLayout()
-            grey_avg_layout.addWidget(QLabel("Grey average level: ", objectName='title', alignment=Qt.AlignLeft))
-            self.avg_label = QLabel("None", alignment=Qt.AlignRight)
-            grey_avg_layout.addWidget(self.avg_label)
-            main_layout.addLayout(grey_avg_layout)
-        else:
-            rgb_avg_layout = QHBoxLayout()
-            rgb_avg_layout.addWidget(QLabel("RGB average level: ", objectName='title', alignment=Qt.AlignLeft))
-            self.avg_label = QLabel("None", alignment=Qt.AlignRight)
-            rgb_avg_layout.addWidget(self.avg_label)
-            main_layout.addLayout(rgb_avg_layout)
-
-        # Save button
-        self.btn_save = QPushButton("Save")
-        self.btn_save.clicked.connect(self.on_save_clicked)
-        self.btn_save.setEnabled(False)
-        main_layout.addWidget(self.btn_save)
-
-        self.setLayout(main_layout)
-
-    def center(self):
-        qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
-
-    def on_crop_finished(self):
-        self.btn_save.setEnabled(True)
-
-    def get_cropped_image(self):
-        img = self.my_image.image
-        crop_start, crop_end = self.image_cropper.get_crop()
-
-        bigger_x, smaller_x, bigger_y, smaller_y = 0, 0, 0, 0
-
-        if crop_start.x() >= crop_end.x():
-            bigger_x = crop_start.x()
-            smaller_x = crop_end.x()
-        else:
-            bigger_x = crop_end.x()
-            smaller_x = crop_start.x()
-
-        if crop_start.y() >= crop_end.y():
-            bigger_y = crop_start.y()
-            smaller_y = crop_end.y()
-        else:
-            bigger_y = crop_end.y()
-            smaller_y = crop_start.y()
-
-        img_left_area = (smaller_x, smaller_y, bigger_x, bigger_y)
-
-        img_left = img.crop(img_left_area)
-
-        return img_left
-
-    def on_save_clicked(self):
-        img_left = self.get_cropped_image()
-
-        # Get image data
-        np_img = numpy.array(img_left)
-
-        if self.is_grey_scale:
-            avg_level = numpy.mean(numpy.mean(np_img, axis=0), axis=0)
-        else:
-            avg_level = numpy.mean(numpy.mean(numpy.mean(np_img, axis=0), axis=0), axis=0)
-
-        self.avg_label.setText(str(avg_level))
-        self.number_of_pixels_label.setText(str(np_img.shape[0] * np_img.shape[1]))
-
-        # Show image
-        img_left.show()
-        """cropped_img = img.crop(crop_start.x(), crop_start.y(),
-                               crop_end.x(), crop_end.y()).show()"""
-
-
 class ImageCropper(QWidget):
     def __init__(self, image: MyImage):
         super().__init__()
@@ -228,3 +126,105 @@ class ImageCropper(QWidget):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_F1:
             config_window.main_window_global.draw_image(self.my_image)
+
+
+class CropImage(QWidget):
+    def __init__(self, img: MyImage = None):
+        super().__init__()
+        self.my_image = img
+        self.set_layouts()
+
+    def set_layouts(self):
+        width, height = self.my_image.dimensions
+        self.setGeometry(30, 30, width, height)
+        self.setWindowTitle(self.my_image.file_name)
+        self.center()
+
+        main_layout = QVBoxLayout()
+
+        self.image_cropper = ImageCropper(self.my_image)
+        self.image_cropper.crop_finished(self.on_crop_finished)
+        main_layout.addWidget(self.image_cropper)
+
+        # Labels for number of pixels, average grey and colour levels
+        number_of_pixels_layout = QHBoxLayout()
+        number_of_pixels_layout.addWidget(QLabel("Number of pixels: ", objectName='title', alignment=Qt.AlignLeft))
+        self.number_of_pixels_label = QLabel("None", alignment=Qt.AlignRight)
+        number_of_pixels_layout.addWidget(self.number_of_pixels_label)
+        main_layout.addLayout(number_of_pixels_layout)
+
+        self.is_grey_scale = MyImage.is_grey_scale(self.my_image.image)
+        if self.is_grey_scale:
+            grey_avg_layout = QHBoxLayout()
+            grey_avg_layout.addWidget(QLabel("Grey average level: ", objectName='title', alignment=Qt.AlignLeft))
+            self.avg_label = QLabel("None", alignment=Qt.AlignRight)
+            grey_avg_layout.addWidget(self.avg_label)
+            main_layout.addLayout(grey_avg_layout)
+        else:
+            rgb_avg_layout = QHBoxLayout()
+            rgb_avg_layout.addWidget(QLabel("RGB average level: ", objectName='title', alignment=Qt.AlignLeft))
+            self.avg_label = QLabel("None", alignment=Qt.AlignRight)
+            rgb_avg_layout.addWidget(self.avg_label)
+            main_layout.addLayout(rgb_avg_layout)
+
+        self.btn_save = QPushButton("Save")
+        self.btn_save.clicked.connect(self.on_save_clicked)
+        self.btn_save.setEnabled(False)
+        main_layout.addWidget(self.btn_save)
+
+        self.setLayout(main_layout)
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+    def on_crop_finished(self):
+        self.btn_save.setEnabled(True)
+
+    @staticmethod
+    def get_cropped_image(image: MyImage, image_cropper: ImageCropper):
+        img = image.image
+        crop_start, crop_end = image_cropper.get_crop()
+
+        bigger_x, smaller_x, bigger_y, smaller_y = 0, 0, 0, 0
+
+        if crop_start.x() >= crop_end.x():
+            bigger_x = crop_start.x()
+            smaller_x = crop_end.x()
+        else:
+            bigger_x = crop_end.x()
+            smaller_x = crop_start.x()
+
+        if crop_start.y() >= crop_end.y():
+            bigger_y = crop_start.y()
+            smaller_y = crop_end.y()
+        else:
+            bigger_y = crop_end.y()
+            smaller_y = crop_start.y()
+
+        img_left_area = (smaller_x, smaller_y, bigger_x, bigger_y)
+
+        img_left = img.crop(img_left_area)
+
+        return img_left
+
+    def on_save_clicked(self):
+        img_left = self.get_cropped_image(self.my_image, self.image_cropper)
+
+        # Get image data
+        np_img = numpy.array(img_left)
+
+        if self.is_grey_scale:
+            avg_level = numpy.mean(numpy.mean(np_img, axis=0), axis=0)
+        else:
+            avg_level = numpy.mean(numpy.mean(numpy.mean(np_img, axis=0), axis=0), axis=0)
+
+        self.avg_label.setText(str(avg_level))
+        self.number_of_pixels_label.setText(str(np_img.shape[0] * np_img.shape[1]))
+
+        # Show image
+        img_left.show()
+        """cropped_img = img.crop(crop_start.x(), crop_start.y(),
+                               crop_end.x(), crop_end.y()).show()"""
