@@ -1,10 +1,12 @@
 from typing import Union
 
+from PIL import Image
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QDesktopWidget, QPushButton, QInputDialog, QHBoxLayout, QLabel, \
     QLineEdit
 
 from Algorithms import Filters
+from GUI import crop_image_utils
 from GUI.crop_image_window import ImageCropper, CropImage
 from TP0.image import MyImage
 
@@ -12,6 +14,8 @@ from TP0.image import MyImage
 class MaskImage(QWidget):
 
     maskLineEdit : Union[QLineEdit, QLineEdit]
+    image_cropper: ImageCropper
+    selected_region : Image
 
     def __init__(self, img: MyImage = None):
         super().__init__()
@@ -26,10 +30,12 @@ class MaskImage(QWidget):
 
         main_layout = QVBoxLayout()
 
-        # self.image_cropper = ImageCropper(self.my_image)
-        # self.image_cropper.crop_finished(self.on_crop_finished)
-        # main_layout.addWidget(self.image_cropper)
+        # Image cropper to select region to apply filter
+        self.image_cropper = ImageCropper(self.my_image)
+        self.image_cropper.crop_finished(self.on_crop_finished)
+        main_layout.addWidget(self.image_cropper)
 
+        # Ask for mask value, min: 1, max: 20?
         mask_layout = QHBoxLayout()
         mask_label = QLabel("Mask value: ")
         self.maskLineEdit = QLineEdit()
@@ -67,29 +73,34 @@ class MaskImage(QWidget):
         mask = int(self.maskLineEdit.text())
         if mask % 2 != 0:
             return
-        new_img = Filters.median_filter(self.my_image, mask)
-        new_img.image.show()
+        filtered_img = Filters.median_filter(self.selected_region, mask)
+        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
+        result.show()
 
     def weighted_median_filter(self):
-        new_img = Filters.weighted_median_filter(self.my_image)
-        new_img.image.show()
+        filtered_img = Filters.weighted_median_filter(self.selected_region)
+        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
+        result.show()
 
     def mean_filter(self):
         mask = int(self.maskLineEdit.text())
         if mask % 2 != 0:
             return
-        new_img = Filters.mean_filter(self.my_image, mask)
-        new_img.image.show()
+        filtered_img = Filters.mean_filter(self.selected_region, mask)
+        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
+        result.show()
 
     def gauss_filter(self):
         # to do: sigma
-        new_img = Filters.gaussian_filter(self.my_image)
-        new_img.image.show()
+        filtered_img = Filters.gaussian_filter(self.selected_region)
+        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
+        result.show()
 
     def edge_enhancement(self):
         # to do
-        new_img = Filters.mean_filter(self.my_image, int(self.maskLineEdit.text()))
-        new_img.image.show()
+        filtered_img = Filters.mean_filter(self.selected_region)
+        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
+        result.show()
 
     # UTILs
 
@@ -100,18 +111,5 @@ class MaskImage(QWidget):
         self.move(qr.topLeft())
 
     def on_crop_finished(self):
-        crop_start, crop_end = self.image_cropper.get_crop()
-        smaller_x, smaller_y = 0, 0
-
-        if crop_start.x() >= crop_end.x():
-            smaller_x = crop_end.x()
-        else:
-            smaller_x = crop_start.x()
-
-        if crop_start.y() >= crop_end.y():
-            smaller_y = crop_end.y()
-        else:
-            smaller_y = crop_start.y()
-
-        self.kernel_size = smaller_x if smaller_x < smaller_y else smaller_y
-        print(self.kernel_size)
+        cropped_img = crop_image_utils.get_cropped_image(self.my_image.image, self.image_cropper.get_crop())
+        self.selected_region = MyImage.from_image(cropped_img, cropped_img.size)

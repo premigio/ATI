@@ -40,7 +40,7 @@ def mean_filter(image: MyImage, mask: int):
     return MyImage.from_image(fin_image, image.dimensions)
 
 
-def median_filter(image: Image, mask: int):
+def median_filter(image: MyImage, mask: int):
     if image is None:
         return
     pixel_array = np.array(image.image)
@@ -57,7 +57,7 @@ def median_filter(image: Image, mask: int):
     return MyImage.from_image(fin_image, image.dimensions)
 
 
-def weighted_median_filter(image: Image):
+def weighted_median_filter(image: MyImage):
     if image is None:
         return
     pixel_array = np.array(image.image)
@@ -77,8 +77,6 @@ def weighted_median_filter(image: Image):
 
     fin_image = MyImage.numpy_to_image(pixel_array, image.mode)
     return MyImage.from_image(fin_image, image.dimensions)
-
-    return image
 
 
 def gaussian_filter(image: MyImage, sigma: int):

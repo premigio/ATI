@@ -12,13 +12,10 @@ from PyQt5.QtCore import Qt
 
 # Subclass QMainWindow to customise your application's main window
 from GUI import config_window
-from GUI.graph_window import GraphWindow
-from GUI.image_window import ImageWindow
 from GUI.crop_image_window import CropImage
 from GUI.mask_window import MaskImage
 from GUI.multiple_images import MultipleImageSelector
 from TP0.image import MyImage, Mode
-from TP0.main import sizeDict
 import GUI.functions_tab as ft
 import GUI.noises_filters_tab as nt
 
