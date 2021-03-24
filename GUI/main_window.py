@@ -153,8 +153,8 @@ class MainWindow(QWidget):
 
         functions_tab.setLayout(functions_layout)
 
-        tabLayout.addTab(operations_tab, "Operations")
         tabLayout.addTab(filter_tab, "Filters and noise")
+        tabLayout.addTab(operations_tab, "Operations")
         tabLayout.addTab(functions_tab, "More functions")
         main_layout.addWidget(tabLayout)
 

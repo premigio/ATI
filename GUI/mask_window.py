@@ -12,10 +12,9 @@ from TP0.image import MyImage
 
 
 class MaskImage(QWidget):
-
-    maskLineEdit : Union[QLineEdit, QLineEdit]
+    maskLineEdit: Union[QLineEdit, QLineEdit]
     image_cropper: ImageCropper
-    selected_region : Image
+    selected_region: Image
 
     def __init__(self, img: MyImage = None):
         super().__init__()
@@ -71,6 +70,8 @@ class MaskImage(QWidget):
 
     def median_filter(self):
         mask = int(self.maskLineEdit.text())
+        if mask is None or self.selected_region is None:
+            return
         if mask % 2 == 0:
             return
         filtered_img = Filters.median_filter(self.selected_region, mask)
@@ -84,6 +85,8 @@ class MaskImage(QWidget):
 
     def mean_filter(self):
         mask = int(self.maskLineEdit.text())
+        if mask is None or self.selected_region is None:
+            return
         if mask % 2 == 0:
             return
         filtered_img = Filters.mean_filter(self.selected_region, mask)

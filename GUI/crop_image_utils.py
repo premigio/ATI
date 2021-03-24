@@ -14,20 +14,20 @@ def get_area(crop_area):
 
     crop_start, crop_end = crop_area
 
-    bigger_x, smaller_x, bigger_y, smaller_y = 0, 0, 0, 0
+    higher_x, lower_x, higher_y, lower_y = 0, 0, 0, 0
 
     if crop_start.x() >= crop_end.x():
-        bigger_x = crop_start.x()
-        smaller_x = crop_end.x()
+        higher_x = crop_start.x()
+        lower_x = crop_end.x()
     else:
-        bigger_x = crop_end.x()
-        smaller_x = crop_start.x()
+        higher_x = crop_end.x()
+        lower_x = crop_start.x()
 
     if crop_start.y() >= crop_end.y():
-        bigger_y = crop_start.y()
-        smaller_y = crop_end.y()
+        higher_y = crop_start.y()
+        lower_y = crop_end.y()
     else:
-        bigger_y = crop_end.y()
-        smaller_y = crop_start.y()
+        higher_y = crop_end.y()
+        lower_y = crop_start.y()
 
-    return smaller_x, smaller_y, bigger_x, bigger_y
+    return lower_x, lower_y, higher_x, higher_y

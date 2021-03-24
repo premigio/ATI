@@ -5,7 +5,7 @@ from PyQt5.QtGui import QPixmap, QPainter, QPen, QFont
 from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget
 from PyQt5.QtCore import Qt
 
-from GUI import config_window
+from GUI import config_window, crop_image_utils
 from TP0.image import MyImage
 
 
@@ -67,25 +67,7 @@ class ImageCropper(QWidget):
                 new_img = self.my_image.image.copy()
                 img = new_img.pillow_image()
 
-                bigger_x, smaller_x, bigger_y, smaller_y = 0, 0, 0, 0
-
-                if crop_start.x() >= crop_end.x():
-                    bigger_x = crop_start.x()
-                    smaller_x = crop_end.x()
-                else:
-                    bigger_x = crop_end.x()
-                    smaller_x = crop_start.x()
-
-                if crop_start.y() >= crop_end.y():
-                    bigger_y = crop_start.y()
-                    smaller_y = crop_end.y()
-                else:
-                    bigger_y = crop_end.y()
-                    smaller_y = crop_start.y()
-
-                img_left_area = (smaller_x, smaller_y, bigger_x, bigger_y)
-
-                img_left = img.crop(img_left_area)
+                img_left = crop_image_utils.get_cropped_image(img, self.get_crop())
 
                 new_img.set_pillow_image(img_left)
 

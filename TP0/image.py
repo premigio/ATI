@@ -7,6 +7,7 @@ from enum import Enum
 
 from GUI import crop_image_utils
 
+
 class Mode(Enum):
     ONE = '1'
     L = 'L'
@@ -226,14 +227,7 @@ class MyImage:
     def merge_images(img_1: Image, img_2: Image, crop_area):
 
         merged_img = img_1.copy()
-        smaller_x, smaller_y, bigger_x, bigger_y = crop_image_utils.get_area(crop_area)
-        img2_i, img2_j = 0, 0
-
-        for i in range(smaller_x, bigger_x):
-            for j in range(smaller_y, bigger_y):
-                img_2_pixel = img_2.getpixel((img2_i, img2_j))
-                img2_j =  img2_j + 1
-                merged_img.putpixel((i, j), img_2_pixel)
-            img2_i = img2_i + 1
-
+        crop_start, crop_end = crop_area
+        offset = crop_start.x(), crop_start.y()
+        merged_img.paste(img_2, offset)
         return merged_img
