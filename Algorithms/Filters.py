@@ -30,13 +30,14 @@ def mean_filter(image: MyImage, mask: int):
         return
     wei = 1.0 / (mask ** 2)
     pixel_array = np.array(image.image)
+    pixel_array2 = pixel_array.copy()
     w, h = image.image.size
 
     for i in range(w):
         for j in range(h):
-            pixel_array[j][i] = wei * np.sum(get_pixels_around(pixel_array, j, i, np.ones(shape=(mask, mask))))
+            pixel_array2[j][i] = wei * np.sum(get_pixels_around(pixel_array, j, i, np.ones(shape=(mask, mask))))
 
-    fin_image = MyImage.numpy_to_image(pixel_array, image.mode)
+    fin_image = MyImage.numpy_to_image(pixel_array2, image.mode)
     return MyImage.from_image(fin_image, image.dimensions)
 
 
@@ -44,6 +45,7 @@ def median_filter(image: Image, mask: int):
     if image is None:
         return
     pixel_array = np.array(image.image)
+    pixel_array2 = pixel_array.copy()
     w, h = image.image.size
 
     for i in range(w):
@@ -51,9 +53,9 @@ def median_filter(image: Image, mask: int):
             pixels_around = get_pixels_around(pixel_array, j, i, np.ones(shape=(mask, mask)))
             pixels_around = np.array(pixels_around)
             pixels_around.sort()
-            pixel_array[j][i] = np.median(pixels_around)
+            pixel_array2[j][i] = np.median(pixels_around)
 
-    fin_image = MyImage.numpy_to_image(pixel_array, image.mode)
+    fin_image = MyImage.numpy_to_image(pixel_array2, image.mode)
     return MyImage.from_image(fin_image, image.dimensions)
 
 
@@ -61,6 +63,7 @@ def weighted_median_filter(image: Image):
     if image is None:
         return
     pixel_array = np.array(image.image)
+    pixel_array2 = pixel_array.copy()
     w, h = image.image.size
     mask = [1, 2, 1, 2, 4, 2, 1, 2, 1]
 
@@ -73,12 +76,10 @@ def weighted_median_filter(image: Image):
                     weighted_pixels_around.append(pixels_around[n])
             weighted_pixels_around = np.array(weighted_pixels_around)
             weighted_pixels_around.sort()
-            pixel_array[j][i] = np.median(weighted_pixels_around)
+            pixel_array2[j][i] = np.median(weighted_pixels_around)
 
-    fin_image = MyImage.numpy_to_image(pixel_array, image.mode)
+    fin_image = MyImage.numpy_to_image(pixel_array2, image.mode)
     return MyImage.from_image(fin_image, image.dimensions)
-
-    return image
 
 
 def gaussian_filter(image: MyImage, sigma: int):
@@ -86,8 +87,8 @@ def gaussian_filter(image: MyImage, sigma: int):
     # eso antes de llamar esto en el front
 
     mask = 2 * sigma + 1
-    half_mask_size = int((mask - 1) / 2)
     pixel_array = np.array(image.image)
+    pixel_array2 = pixel_array.copy()
     w, h = image.image.size
 
     full_mask = np.zeros(shape=(mask, mask))
@@ -101,7 +102,26 @@ def gaussian_filter(image: MyImage, sigma: int):
 
     for i in range(w):
         for j in range(h):
-            pixel_array[j][i] = np.sum(get_pixels_around(pixel_array, j, i, full_mask))
+            pixel_array2[j][i] = np.sum(get_pixels_around(pixel_array, j, i, full_mask))
 
-    fin_image = MyImage.numpy_to_image(pixel_array, image.mode)
+    fin_image = MyImage.numpy_to_image(pixel_array2, image.mode)
+    return MyImage.from_image(fin_image, image.dimensions)
+
+
+def border_enhancement(image: MyImage, mask: int):
+    if image is None:
+        return
+    wei = 1.0 / (mask ** 2)
+    pixel_array = np.array(image.image)
+    pixel_array2 = pixel_array.copy()
+    w, h = image.image.size
+
+    mask_matrix = np.ones(shape=(mask, mask)) * -1
+    half_mask = int((mask - 1) / 2)
+    mask_matrix[half_mask][half_mask] = mask_matrix[half_mask][half_mask] * (- (mask ** 2 - 1))
+
+    for i in range(w):
+        for j in range(h):
+            pixel_array2[j][i] = wei * np.sum(get_pixels_around(pixel_array, j, i, mask_matrix))
+    fin_image = MyImage.numpy_to_image(pixel_array2, image.mode)
     return MyImage.from_image(fin_image, image.dimensions)

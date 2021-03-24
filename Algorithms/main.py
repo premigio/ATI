@@ -14,6 +14,7 @@ sizeDict = {
 
 if __name__ == '__main__':
     lena_photo = MyImage('../Photos/LENA.RAW', sizeDict['LENA'])
-    # lena_photo.image.show()
-    noise_photo = salt_n_pepper(lena_photo)
+    photo = MyImage('../Photos/TEST.pbm')
+    lena_photo.image.show()
+    noise_photo = weighted_median_filter(lena_photo)
     noise_photo.image.show()
