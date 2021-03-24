@@ -49,7 +49,7 @@ class MaskImage(QWidget):
         median_filter_btn.clicked.connect(self.median_filter)
         main_layout.addWidget(median_filter_btn)
 
-        weigh_median_filter_btn = QPushButton("Apply wighted median filter")
+        weigh_median_filter_btn = QPushButton("Apply weighted median filter")
         weigh_median_filter_btn.clicked.connect(self.weighted_median_filter)
         main_layout.addWidget(weigh_median_filter_btn)
 
@@ -70,7 +70,10 @@ class MaskImage(QWidget):
     # FILTERs
 
     def median_filter(self):
-        mask = int(self.maskLineEdit.text())
+        mask = self.maskLineEdit.text()
+        if mask == '':
+            return
+        mask = int(mask)
         if mask is None or mask % 2 == 0:
             return
         filtered_img = Filters.median_filter(self.selected_region, mask)
@@ -83,7 +86,10 @@ class MaskImage(QWidget):
         result.show()
 
     def mean_filter(self):
-        mask = int(self.maskLineEdit.text())
+        mask = self.maskLineEdit.text()
+        if mask == '':
+            return
+        mask = int(mask)
         if mask is None or mask % 2 == 0:
             return
         filtered_img = Filters.mean_filter(self.selected_region, mask)
@@ -91,14 +97,19 @@ class MaskImage(QWidget):
         result.show()
 
     def gauss_filter(self):
-        # to do: sigma
-        filtered_img = Filters.gaussian_filter(self.selected_region)
+        sigma, _ = QInputDialog.getInt(self, 'sigma', 'Insert sigma value: ', 1, min=1, max=10)
+        filtered_img = Filters.gaussian_filter(self.selected_region, sigma)
         result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
         result.show()
 
     def edge_enhancement(self):
-        # to do
-        filtered_img = Filters.mean_filter(self.selected_region)
+        mask = self.maskLineEdit.text()
+        if mask == '':
+            return
+        mask = int(mask)
+        if mask is None or mask % 2 == 0:
+            return
+        filtered_img = Filters.border_enhancement(self.selected_region, mask)
         result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
         result.show()
 
