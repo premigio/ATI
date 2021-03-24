@@ -65,7 +65,7 @@ class MaskImage(QWidget):
 
     def median_filter(self):
         mask = int(self.maskLineEdit.text())
-        if mask % 2 != 0:
+        if mask % 2 == 0:
             return
         new_img = Filters.median_filter(self.my_image, mask)
         new_img.image.show()
@@ -76,7 +76,7 @@ class MaskImage(QWidget):
 
     def mean_filter(self):
         mask = int(self.maskLineEdit.text())
-        if mask % 2 != 0:
+        if mask % 2 == 0:
             return
         new_img = Filters.mean_filter(self.my_image, mask)
         new_img.image.show()
