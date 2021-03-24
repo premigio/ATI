@@ -78,12 +78,14 @@ class MaskImage(QWidget):
         if mask is None or mask % 2 == 0:
             return
         filtered_img = Filters.median_filter(self.selected_region, mask)
-        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
+        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop()) \
+            if self.image_cropper.get_crop() != (None, None) else filtered_img
         result.show()
 
     def weighted_median_filter(self):
         filtered_img = Filters.weighted_median_filter(self.selected_region)
-        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
+        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop()) \
+            if self.image_cropper.get_crop() != (None, None) else filtered_img
         result.show()
 
     def mean_filter(self):
@@ -94,13 +96,15 @@ class MaskImage(QWidget):
         if mask is None or mask % 2 == 0:
             return
         filtered_img = Filters.mean_filter(self.selected_region, mask)
-        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
+        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop()) \
+            if self.image_cropper.get_crop() != (None, None) else filtered_img
         result.show()
 
     def gauss_filter(self):
         sigma, _ = QInputDialog.getInt(self, 'sigma', 'Insert sigma value: ', 1, min=1, max=10)
         filtered_img = Filters.gaussian_filter(self.selected_region, sigma)
-        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
+        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop()) \
+            if self.image_cropper.get_crop() != (None, None) else filtered_img
         result.show()
 
     def edge_enhancement(self):
@@ -111,7 +115,8 @@ class MaskImage(QWidget):
         if mask is None or mask % 2 == 0:
             return
         filtered_img = Filters.border_enhancement(self.selected_region, mask)
-        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
+        result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop()) \
+            if self.image_cropper.get_crop() != (None, None) else filtered_img
         result.show()
 
     # UTILs

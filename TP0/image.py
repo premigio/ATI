@@ -231,3 +231,6 @@ class MyImage:
         offset = crop_start.x(), crop_start.y()
         merged_img.paste(img_2, offset)
         return merged_img
+
+    def show(self):
+        self.image.show()
