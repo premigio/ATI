@@ -20,6 +20,7 @@ class MaskImage(QWidget):
         super().__init__()
         self.my_image = img
         self.set_layouts()
+        self.selected_region = img
 
     def set_layouts(self):
         width, height = self.my_image.dimensions
@@ -70,9 +71,7 @@ class MaskImage(QWidget):
 
     def median_filter(self):
         mask = int(self.maskLineEdit.text())
-        if mask is None or self.selected_region is None:
-            return
-        if mask % 2 == 0:
+        if mask is None or mask % 2 == 0:
             return
         filtered_img = Filters.median_filter(self.selected_region, mask)
         result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
@@ -85,9 +84,7 @@ class MaskImage(QWidget):
 
     def mean_filter(self):
         mask = int(self.maskLineEdit.text())
-        if mask is None or self.selected_region is None:
-            return
-        if mask % 2 == 0:
+        if mask is None or mask % 2 == 0:
             return
         filtered_img = Filters.mean_filter(self.selected_region, mask)
         result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
