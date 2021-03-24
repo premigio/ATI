@@ -1,11 +1,11 @@
 import numpy as np
 
-from TP0.image import MyImage
+from TP0.image import MyImage, normalization
 from PIL import Image
 
 
 # mascaras son impares!
-def get_pixels_around(pixel_array, r, c, mask):
+def get_pixels_around(pixel_array, r, c, mask, circular_border=False):
     mask_size, _ = mask.shape
     m, n = pixel_array.shape
     coord = []
@@ -13,14 +13,20 @@ def get_pixels_around(pixel_array, r, c, mask):
     my_range = np.arange(start=- 1 * half_mask, stop=half_mask + 1, step=1)
     for i in my_range:
         for j in my_range:
-            if r + i < m and c + j < n:
-                coord.append(pixel_array[r + i, c + j] * mask[i][j])
-            elif r + i < m:
-                coord.append(pixel_array[r + i, 0] * mask[i][j])
-            elif c + j < n:
-                coord.append(pixel_array[0, c + j] * mask[i][j])
+            if circular_border:
+                if r + i < m and c + j < n:
+                    coord.append(pixel_array[r + i, c + j] * mask[i][j])
+                elif r + i < m:
+                    coord.append(pixel_array[r + i, 0] * mask[i][j])
+                elif c + j < n:
+                    coord.append(pixel_array[0, c + j] * mask[i][j])
+                else:
+                    coord.append(pixel_array[0, 0] * mask[i][j])
             else:
-                coord.append(pixel_array[0, 0] * mask[i][j])
+                if 0 <= r + i < m and 0 <= c + j < n:
+                    coord.append(pixel_array[r + i, c + j] * mask[i][j])
+                else:
+                    coord.append(0)
 
     return coord
 
@@ -112,7 +118,7 @@ def border_enhancement(image: MyImage, mask: int):
     if image is None:
         return
     wei = 1.0 / (mask ** 2)
-    pixel_array = np.array(image.image)
+    pixel_array = np.array(image.image, dtype=np.int64)
     pixel_array2 = pixel_array.copy()
     w, h = image.image.size
 
@@ -123,5 +129,6 @@ def border_enhancement(image: MyImage, mask: int):
     for i in range(w):
         for j in range(h):
             pixel_array2[j][i] = wei * np.sum(get_pixels_around(pixel_array, j, i, mask_matrix))
+    normalization(pixel_array2)
     fin_image = MyImage.numpy_to_image(pixel_array2, image.mode)
     return MyImage.from_image(fin_image, image.dimensions)
