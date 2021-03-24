@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QDesktopWidget, QPushButton, Q
 from Algorithms import Filters
 from GUI import crop_image_utils
 from GUI.crop_image_window import ImageCropper, CropImage
+from GUI.graph_window import GraphWindow
 from TP0.image import MyImage
 
 

@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QDesktopWidget, QPushB
 from GUI import config_window
 from GUI.main_window import *
 from TP0.image import MyImage
+from GUI.graph_window import GraphWindow
 from Algorithms.Functions import *
 
 
@@ -51,10 +52,7 @@ def show_eq_hist(image: MyImage, window: MainWindow):
         error_dialog.showMessage('You must select an image first')
         error_dialog.show()
         return
-    start = time.time()
     new_image = equalized_histogram2(image, draw_image=True)
-    end = time.time()
-    print(end - start)
     widget = show_hist(new_image, window)
     return new_image, widget
 
