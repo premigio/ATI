@@ -71,7 +71,7 @@ class MaskImage(QWidget):
 
     def median_filter(self):
         mask = int(self.maskLineEdit.text())
-        if mask % 2 != 0:
+        if mask % 2 == 0:
             return
         filtered_img = Filters.median_filter(self.selected_region, mask)
         result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
@@ -84,7 +84,7 @@ class MaskImage(QWidget):
 
     def mean_filter(self):
         mask = int(self.maskLineEdit.text())
-        if mask % 2 != 0:
+        if mask % 2 == 0:
             return
         filtered_img = Filters.mean_filter(self.selected_region, mask)
         result = MyImage.merge_images(self.my_image.image, filtered_img.image, self.image_cropper.get_crop())
