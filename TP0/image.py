@@ -5,6 +5,8 @@ from PIL import Image, ImageDraw, ImageChops
 import numpy as np
 from enum import Enum
 
+from GUI import crop_image_utils
+
 
 class Mode(Enum):
     ONE = '1'
@@ -220,3 +222,12 @@ class MyImage:
                 image.putpixel((i, j), new_pixel)
 
         return image
+
+    @staticmethod
+    def merge_images(img_1: Image, img_2: Image, crop_area):
+
+        merged_img = img_1.copy()
+        crop_start, crop_end = crop_area
+        offset = crop_start.x(), crop_start.y()
+        merged_img.paste(img_2, offset)
+        return merged_img
