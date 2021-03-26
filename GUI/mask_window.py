@@ -26,7 +26,6 @@ class MaskImage(QWidget):
     def set_layouts(self):
         width, height = self.my_image.dimensions
         self.setGeometry(30, 30, width, height)
-        self.setWindowTitle(self.my_image.file_name)
         self.center()
 
         main_layout = QVBoxLayout()

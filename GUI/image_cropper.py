@@ -34,7 +34,6 @@ class ImageCropper(QWidget):
     def set_layouts(self):
         width, height = self.my_image.dimensions
         self.setFixedSize(width, height)
-        self.setWindowTitle(self.my_image.file_name)
         self.center()
 
     def center(self):

@@ -8,12 +8,13 @@ from matplotlib import pyplot as plt
 from TP0.image import MyImage, normalization
 
 
-def salt_n_pepper(image: MyImage):
+def salt_n_pepper(image: MyImage, density: float):
     w, h = image.image.size
     pixel_array = np.array(image.image)
     p0 = np.random.uniform()
     p1 = 1 - p0
-    number_of_pixels = random.randint(0, w * h)
+    number_of_pixels = np.floor(density*w*h)
+    number_of_pixels = int(number_of_pixels)
     for n in range(number_of_pixels):
         i = random.randint(0, w - 1)
         j = random.randint(0, h - 1)
@@ -30,7 +31,7 @@ def salt_n_pepper(image: MyImage):
 
 def noise_apply(image: MyImage, percentage: float, add_multiply, noise_function):
     w, h = image.image.size
-    pixel_array = np.array(image.image)
+    pixel_array = np.array(image.image, dtype=np.int64)
 
     for i in range(h):
         for j in range(w):

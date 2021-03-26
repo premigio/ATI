@@ -341,7 +341,7 @@ class MainWindow(QWidget):
 
     def show_filters(self):
         if self.myImage is not None:
-            mask_image_window = MaskImage(self.myImage)
+            mask_image_window = MaskImage(self.stacked_image)
             self.windows.append(mask_image_window)
             mask_image_window.show()
 
