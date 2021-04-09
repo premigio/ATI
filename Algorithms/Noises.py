@@ -8,10 +8,9 @@ from matplotlib import pyplot as plt
 from TP0.image import MyImage, normalization
 
 
-def salt_n_pepper(image: MyImage, density: float):
+def salt_n_pepper(image: MyImage, density: float, p0: float):
     w, h = image.image.size
     pixel_array = np.array(image.image)
-    p0 = np.random.uniform()
     p1 = 1 - p0
     number_of_pixels = np.floor(density*w*h)
     number_of_pixels = int(number_of_pixels)
