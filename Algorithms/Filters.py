@@ -31,6 +31,7 @@ def get_pixels_around(pixel_array, r, c, mask, circular_border=False):
     return coord
 
 
+# noinspection PyUnresolvedReferences,PyTypeChecker
 def mean_filter(image: MyImage, mask: int):
     if image is None:
         return
@@ -47,6 +48,7 @@ def mean_filter(image: MyImage, mask: int):
     return MyImage.from_image(fin_image, image.dimensions)
 
 
+# noinspection PyUnresolvedReferences,PyTypeChecker
 def median_filter(image: MyImage, mask: int):
     if image is None:
         return
@@ -65,6 +67,7 @@ def median_filter(image: MyImage, mask: int):
     return MyImage.from_image(fin_image, image.dimensions)
 
 
+# noinspection PyUnresolvedReferences,PyTypeChecker
 def weighted_median_filter(image: MyImage):
     if image is None:
         return
@@ -88,6 +91,7 @@ def weighted_median_filter(image: MyImage):
     return MyImage.from_image(fin_image, image.dimensions)
 
 
+# noinspection PyUnresolvedReferences,PyTypeChecker
 def gaussian_filter(image: MyImage, sigma: int):
     # para color, haces split y dsps Image.merge(img_cpy.image_element.mode, channels)
     # eso antes de llamar esto en el front
@@ -114,6 +118,7 @@ def gaussian_filter(image: MyImage, sigma: int):
     return MyImage.from_image(fin_image, image.dimensions)
 
 
+# noinspection PyUnresolvedReferences,PyTypeChecker
 def border_enhancement(image: MyImage, mask: int):
     if image is None:
         return
@@ -129,6 +134,43 @@ def border_enhancement(image: MyImage, mask: int):
     for i in range(w):
         for j in range(h):
             pixel_array2[j][i] = wei * np.sum(get_pixels_around(pixel_array, j, i, mask_matrix))
+    normalization(pixel_array2)
+    fin_image = MyImage.numpy_to_image(pixel_array2, image.mode)
+    return MyImage.from_image(fin_image, image.dimensions)
+
+
+# noinspection PyUnresolvedReferences,PyTypeChecker
+def prewitt_sobel_filters(image: MyImage, prewitt: bool):
+    if image is None:
+        return
+
+    mask_h = [[-1, -1, -1],
+              [0, 0, 0],
+              [1, 1, 1]]
+
+    mask_v = [[-1, 0, 1],
+              [-1, 0, 1],
+              [-1, 0, 1]]
+
+    if not prewitt:
+        mask_h[0][1] *= 2
+        mask_h[2][1] *= 2
+        mask_v[1][0] *= 2
+        mask_v[1][2] *= 2
+
+    mask_h = np.array(mask_h)
+    mask_v = np.array(mask_v)
+
+    pixel_array = np.array(image.image)
+    pixel_array2 = pixel_array.copy()
+    w, h = image.image.size
+
+    for i in range(w):
+        for j in range(h):
+            dx = get_pixels_around(pixel_array, j, i, mask_h)
+            dy = get_pixels_around(pixel_array, j, i, mask_v)
+            pixel_array2[j][i] = (np.sum(dx) ** 2 + np.sum(dy) ** 2) ** 0.5
+
     normalization(pixel_array2)
     fin_image = MyImage.numpy_to_image(pixel_array2, image.mode)
     return MyImage.from_image(fin_image, image.dimensions)

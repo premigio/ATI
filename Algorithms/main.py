@@ -16,5 +16,5 @@ if __name__ == '__main__':
     lena_photo = MyImage('../Photos/LENA.RAW', sizeDict['LENA'])
     photo = MyImage('../Photos/TEST.pbm')
     # lena_photo.image.show()
-    noise_photo = border_enhancement(photo, 5)
+    noise_photo = prewitt_sobel_filters(lena_photo, False)
     noise_photo.image.show()

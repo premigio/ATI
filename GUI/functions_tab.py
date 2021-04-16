@@ -1,7 +1,6 @@
 import time
 
 import numpy
-from PIL.ImageQt import ImageQt
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtGui import QPixmap, QPainter, QPen, QFont
