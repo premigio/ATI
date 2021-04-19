@@ -93,7 +93,7 @@ def weighted_median_filter(image: MyImage):
 
 # noinspection PyUnresolvedReferences,PyTypeChecker
 def gaussian_filter(image: MyImage, sigma: int):
-    # para color, haces split y dsps Image.merge(img_cpy.image_element.mode, channels)
+    # para color, haces split y dsps Image.merge(image.mode, channels)
     # eso antes de llamar esto en el front
 
     mask = 2 * sigma + 1
@@ -138,39 +138,3 @@ def border_enhancement(image: MyImage, mask: int):
     fin_image = MyImage.numpy_to_image(pixel_array2, image.mode)
     return MyImage.from_image(fin_image, image.dimensions)
 
-
-# noinspection PyUnresolvedReferences,PyTypeChecker
-def prewitt_sobel_filters(image: MyImage, prewitt: bool):
-    if image is None:
-        return
-
-    mask_h = [[-1, -1, -1],
-              [0, 0, 0],
-              [1, 1, 1]]
-
-    mask_v = [[-1, 0, 1],
-              [-1, 0, 1],
-              [-1, 0, 1]]
-
-    if not prewitt:
-        mask_h[0][1] *= 2
-        mask_h[2][1] *= 2
-        mask_v[1][0] *= 2
-        mask_v[1][2] *= 2
-
-    mask_h = np.array(mask_h)
-    mask_v = np.array(mask_v)
-
-    pixel_array = np.array(image.image)
-    pixel_array2 = pixel_array.copy()
-    w, h = image.image.size
-
-    for i in range(w):
-        for j in range(h):
-            dx = get_pixels_around(pixel_array, j, i, mask_h)
-            dy = get_pixels_around(pixel_array, j, i, mask_v)
-            pixel_array2[j][i] = (np.sum(dx) ** 2 + np.sum(dy) ** 2) ** 0.5
-
-    normalization(pixel_array2)
-    fin_image = MyImage.numpy_to_image(pixel_array2, image.mode)
-    return MyImage.from_image(fin_image, image.dimensions)
