@@ -2,6 +2,7 @@ from Algorithms.Filters import *
 from Algorithms.Functions import *
 from Algorithms.Noises import *
 from Algorithms.BorderDetection import *
+from Algorithms.DiffusionFilters import *
 from TP0.image import MyImage
 
 sizeDict = {
@@ -15,7 +16,7 @@ sizeDict = {
 if __name__ == '__main__':
     lena_photo = MyImage('../Photos/LENA.RAW', sizeDict['LENA'])
     photo = MyImage('../Photos/Lenaclor.pbm')
-    # lena_photo.image.show()
+    lena_photo.image.show()
 
     # Para imagenes. TODO ver que onda umbralizar pq ndeah
     # photos = photo.image.split()
@@ -23,4 +24,6 @@ if __name__ == '__main__':
     # for window in range(len(photos)):
     #     final_image.append(prewitt_sobel_filters(MyImage.from_image(photos[window]), False).image)
     # final = Image.merge(photo.mode, final_image)
-    prewitt_sobel_filters(lena_photo, True).image.show()
+    # prewitt_sobel_filters(lena_photo, True).image.show()
+    fin = anisotropic(lena_photo, FunctionDiff.LECLERC, 10.0, 30)
+    fin.image.show()
