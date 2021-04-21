@@ -43,7 +43,7 @@ def add_directions(arr, x, y, border_function, w, h):
         total += val * border_function(val)
     return total
 
-#todo ver que onda el tema por cual empezar
+
 def anisotropic(image: MyImage, border_function: FunctionDiff, sigma: float, iterations: int = 1):
     if image is None:
         return

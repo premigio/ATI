@@ -138,3 +138,54 @@ def border_enhancement(image: MyImage, mask: int):
     fin_image = MyImage.numpy_to_image(pixel_array2, image.mode)
     return MyImage.from_image(fin_image, image.dimensions)
 
+
+def calculate_bi_fil_w(image, i, j, k, l, o_s, o_r):
+    return np.exp(-((((i - k) ** 2 + (j - l) ** 2) / (2.0 * o_s ** 2)) +
+                    ((np.linalg.norm(image[j][i] - image[l][k]) ** 2) / (2.0 * o_r ** 2))))
+
+
+# Primera vez que hago lo de colores aca, pasasr a las otras funciones de a poco
+def calculate_bi_filter(pixel_array, i, j, mask, o_s, o_r):
+    h, w = pixel_array.shape
+
+    half_mask = int((mask - 1) / 2)
+    my_range = np.arange(start=- 1 * half_mask, stop=half_mask + 1, step=1)
+
+    sum_nom = 0.0
+    sum_den = 0.0
+
+    for l in my_range:
+        for k in my_range:
+            if 0 <= k + i < w and 0 <= l + j < h:
+                wei = calculate_bi_fil_w(pixel_array, i, j, i + k, j + l, o_s, o_r)
+                sum_den += wei
+                sum_nom += pixel_array[j + l][i + k] * wei
+
+    return sum_nom / sum_den
+
+
+# noinspection PyUnresolvedReferences,PyTypeChecker
+def bilateral_filter(image: MyImage, mask: int, o_s: float, o_r: float):
+    if image is None or mask % 2 == 0:
+        return
+
+    layers = image.image.split()
+    w, h = image.image.size
+
+    pixel_array = []
+
+    for im in layers:
+        pixel_array.append(np.array(im, dtype=np.int64))
+
+    pixel_array2 = pixel_array.copy()
+    for i in range(w):
+        for j in range(h):
+            for k in range(len(layers)):
+                pixel_array2[k][j][i] = calculate_bi_filter(pixel_array[k], i, j, mask, o_s, o_r)
+
+    final_image = []
+    for band in range(len(layers)):
+        final_image.append(MyImage.numpy_to_image(pixel_array2[band], layers[band].mode))
+
+    final = Image.merge(image.mode, final_image)
+    return MyImage.from_image(final, image.dimensions)
