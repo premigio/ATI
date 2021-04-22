@@ -27,7 +27,7 @@ def add_directions(arr, x, y, border_function, w, h):
     total = 0
     for direction in ['N', 'W', 'E', 'S']:
         val = 0
-        if direction == 'N':
+        if direction == 'S':
             if y + 1 < h:
                 val = arr[y + 1][x]
         elif direction == 'W':
@@ -36,7 +36,7 @@ def add_directions(arr, x, y, border_function, w, h):
         elif direction == 'E':
             if x + 1 < w:
                 val = arr[y][x + 1]
-        else:  # S
+        else:  # N
             if y - 1 >= 0:
                 val = arr[y - 1][x]
         val -= arr[y][x]
@@ -55,7 +55,7 @@ def anisotropic(image: MyImage, border_function: FunctionDiff, sigma: float, ite
         pixel_array = pixel_array2
         for x in range(w):
             for y in range(h):
-                pixel_array2[y][x] = pixel_array2[y][x] + 0.25 * (
+                pixel_array2[y][x] = pixel_array[y][x] + 0.25 * (
                     add_directions(pixel_array, x, y, border_function(sigma), w, h))
 
     normalization(pixel_array2)

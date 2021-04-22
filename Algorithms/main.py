@@ -17,7 +17,7 @@ if __name__ == '__main__':
     lena_photo = MyImage('../Photos/LENA.RAW', sizeDict['LENA'])
     photo = MyImage('../Photos/Lenaclor.pbm')
     #lena_photo.image.show()
-
+    # lena_photo.show()
     # Para imagenes color. TODO ver que onda umbralizar pq ndeah
     # photos = photo.image.split()
     # final_image = []
@@ -26,9 +26,9 @@ if __name__ == '__main__':
     # final = Image.merge(photo.mode, final_image)
     # final.show()
     # prewitt_sobel_filters(lena_photo, True).image.show()
-    # fin = anisotropic(lena_photo, FunctionDiff.LORENTZ, 5.0, 50)
-    # histogram(fin, True)
-    # fin.image.show()
+    fin = anisotropic(lena_photo, FunctionDiff.LECLERC, 5.0, 50)
+    histogram(fin, True)
+    fin.image.show()
 
-    a = bilateral_filter(photo, 7, 2, 30)
-    a.image.show()
+    # a = bilateral_filter(photo, 7, 2, 30)
+    # a.image.show()
