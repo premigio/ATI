@@ -50,8 +50,11 @@ def show_laplacian_gauss_detector(my_image: MyImage, window):
     sigma = window.ask_for_int('Choose a sigma value',
                                default=1, min_value=1, text='Sigma')
 
+    threshold = window.ask_for_float('Choose a threshold value',
+                                     default=30.0, min_value=0.0, text='Threshold')
+
     mask = log_mask(sigma, sigma * 6 + 1)
-    image = laplacian_edge_detector(my_image, mask)
+    image = laplacian_edge_detector(my_image, mask, threshold)
     image.image.show()
     return image
 
