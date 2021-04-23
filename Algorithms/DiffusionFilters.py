@@ -1,6 +1,5 @@
 import numpy as np
-from TP0.image import MyImage, normalization
-from PIL import Image
+from Classes.MyImage import MyImage, normalization
 from enum import Enum
 
 

@@ -1,11 +1,9 @@
 import os
+from enum import Enum
 from typing import List
 
-from PIL import Image, ImageDraw, ImageChops
 import numpy as np
-from enum import Enum
-
-from GUI import crop_image_utils
+from PIL import Image, ImageDraw
 
 
 class Mode(Enum):

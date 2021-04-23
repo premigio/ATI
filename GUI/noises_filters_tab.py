@@ -1,15 +1,5 @@
-import numpy
-from PIL.ImageQt import ImageQt
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import Qt, QPoint
-from PyQt5.QtGui import QPixmap, QPainter, QPen, QFont
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QDesktopWidget, QPushButton, QHBoxLayout
-
-from GUI import config_window
-from GUI.main_window import *
-from TP0.image import MyImage
-
 from Algorithms.Noises import *
+from GUI.main_window import *
 
 
 def show_rayleigh(image: MyImage, window):

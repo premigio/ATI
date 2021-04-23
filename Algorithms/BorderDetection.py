@@ -1,7 +1,8 @@
 import numpy as np
-from Algorithms.Filters import get_pixels_around
-from TP0.image import MyImage, normalization
 from PIL import Image
+
+from Algorithms.Filters import get_pixels_around
+from Classes.MyImage import MyImage, normalization
 
 
 # noinspection PyUnresolvedReferences,PyTypeChecker
@@ -81,3 +82,63 @@ def all_directions(image: MyImage):
     normalization(pixel_array2)
     fin_image = MyImage.numpy_to_image(pixel_array2, image.mode)
     return MyImage.from_image(fin_image, image.dimensions)
+
+
+# Laplacian edge detector
+def laplacian_edge_detector(my_image: MyImage, laplacian_mask, threshold: int = 0):
+    if my_image is None:
+        return
+
+    layers = my_image.image.split()
+    pixel_array = []
+    for im in layers:
+        pixel_array.append(np.array(im, dtype=np.int64))
+
+    width, height = my_image.image.size
+    laplacian_op = []
+
+    for k in range(len(layers)):
+        laplacian_op.append(pixel_array[k].copy())
+
+    for i in range(height):
+        for j in range(width):
+            for k in range(len(layers)):
+                laplacian_op[k][i][j] = np.sum(get_pixels_around(pixel_array[k], i, j, laplacian_mask))
+
+    final_images = []
+    for k in range(len(layers)):
+        result_cross = crosses_by_zero(laplacian_op[k], width, height, threshold)
+        final_images.append(MyImage.numpy_to_image(result_cross, layers[k].mode))
+
+    final = Image.merge(my_image.mode, final_images)
+    return MyImage.from_image(final, my_image.dimensions)
+
+
+def crosses_by_zero(laplacian_op, width, height, threshold: int = 0):
+    normalization(laplacian_op)
+
+    result_cross = np.zeros(shape=(height, width), dtype=np.uint8)
+
+    for i in range(height - 1):
+        for j in range(width):
+            if laplacian_op[i][j] == 0:
+                if i - 1 >= 0 and np.sign(laplacian_op[i - 1][j]) != np.sign(laplacian_op[i + 1][j]):
+                    if abs(laplacian_op[i - 1][j]) + abs(laplacian_op[i + 1][j]) >= threshold:
+                        result_cross[i][j] = 255
+            else:
+                if np.sign(laplacian_op[i][j]) != np.sign(laplacian_op[i + 1][j]):
+                    if abs(laplacian_op[i][j]) + abs(laplacian_op[i + 1][j]) >= threshold:
+                        result_cross[i][j] = 255
+
+    for i in range(height):
+        for j in range(width - 1):
+            if laplacian_op[i][j] == 0:
+                if j - 1 >= 0 and np.sign(laplacian_op[i][j - 1]) != np.sign(laplacian_op[i][j + 1]):
+                    if abs(laplacian_op[i][j - 1]) + abs(laplacian_op[i][j + 1]) >= threshold:
+                        result_cross[i][j] = 255
+            else:
+                if np.sign(laplacian_op[i][j]) != np.sign(laplacian_op[i][j + 1]):
+                    if abs(laplacian_op[i][j]) + abs(laplacian_op[i][j + 1]) >= threshold:
+                        result_cross[i][j] = 255
+
+    return result_cross

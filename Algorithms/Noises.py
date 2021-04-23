@@ -1,11 +1,8 @@
-import os
 import random
 
-from PIL import Image, ImageDraw, ImageChops
 import numpy as np
-from matplotlib import pyplot as plt
 
-from TP0.image import MyImage, normalization
+from Classes.MyImage import MyImage, normalization
 
 
 def salt_n_pepper(image: MyImage, density: float, p0: float):
