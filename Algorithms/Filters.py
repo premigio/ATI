@@ -5,7 +5,7 @@ from PIL import Image
 
 
 # mascaras son impares!
-def get_pixels_around(pixel_array, r, c, mask, circular_border=False):
+def get_pixels_around(pixel_array, r, c, mask, circular_border=False, no_count_border=True):
     mask_size, _ = mask.shape
     m, n = pixel_array.shape
     coord = []
@@ -24,8 +24,8 @@ def get_pixels_around(pixel_array, r, c, mask, circular_border=False):
                     coord.append(pixel_array[0, 0] * mask[i][j])
             else:
                 if 0 <= r + i < m and 0 <= c + j < n:
-                    coord.append(pixel_array[r + i, c + j] * mask[i][j])
-                else:
+                    coord.append(pixel_array[r + i, c + j] * mask[i + half_mask][j + half_mask])
+                elif no_count_border:
                     coord.append(0)
 
     return coord
