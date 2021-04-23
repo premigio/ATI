@@ -26,7 +26,7 @@ def prewitt_sobel_filters(image: MyImage, prewitt: bool):
     mask_h = np.array(mask_h)
     mask_v = np.array(mask_v)
 
-    pixel_array = np.array(image.image)
+    pixel_array = np.array(image.image, dtype=np.int64)
     pixel_array2 = pixel_array.copy()
     w, h = image.image.size
 
