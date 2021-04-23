@@ -175,7 +175,7 @@ def bilateral_filter(image: MyImage, mask: int, o_s: float, o_r: float):
     pixel_array = []
 
     for im in layers:
-        pixel_array.append(np.array(im, dtype=np.int64))
+        pixel_array.append(np.array(im, dtype=np.float64))
 
     pixel_array2 = pixel_array.copy()
     for i in range(w):
