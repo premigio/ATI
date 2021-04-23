@@ -139,6 +139,10 @@ class MainWindow(QWidget):
         border_detector_tab = QWidget()
         border_detector_layout = QVBoxLayout()
         border_detector_layout.setAlignment(Qt.AlignCenter)
+        border_detector_layout.addWidget(QPushButton("Prewitt", clicked=self.show_prewitt))
+        border_detector_layout.addWidget(QPushButton("Sobel", clicked=self.show_sobel))
+        border_detector_layout.addWidget(
+            QPushButton("Directional border detector", clicked=self.show_directional_border))
         border_detector_layout.addWidget(QPushButton("Laplacian detector", clicked=self.show_laplacian_detector))
         border_detector_layout.addWidget(
             QPushButton("Laplacian slope detector", clicked=self.show_laplacian_slope_detector))
@@ -154,6 +158,9 @@ class MainWindow(QWidget):
         filter_layout.addWidget(QPushButton("Exponential Noise", clicked=self.show_exponential_noise))
         filter_layout.addWidget(QPushButton("Salt n Pepper Noise", clicked=self.show_salt_n_pepper))
         filter_layout.addWidget(QPushButton("Masks and Filters", clicked=self.show_filters))
+        filter_layout.addWidget(QPushButton("Bilateral Filter", clicked=self.show_bilateral_filter))
+        filter_layout.addWidget(QPushButton("Anisotropic Filter", clicked=self.show_anisotropic_filter))
+        filter_layout.addWidget(QPushButton("Isotropic Filter", clicked=self.show_isotropic_filter))
 
         filter_tab.setLayout(filter_layout)
 
@@ -358,6 +365,15 @@ class MainWindow(QWidget):
     def show_salt_n_pepper(self):
         self.show_noise(nt.show_salt_n_pepper_noise)
 
+    def show_bilateral_filter(self):
+        self.show_noise(nt.show_bilateral_filter)
+
+    def show_anisotropic_filter(self):
+        self.show_noise(nt.show_anisotropic_filter)
+
+    def show_isotropic_filter(self):
+        self.show_noise(nt.show_isotropic_filter)
+
     def show_filters(self):
         if self.myImage is not None:
             mask_image_window = MaskImage(self.stacked_image)
@@ -441,6 +457,15 @@ class MainWindow(QWidget):
 
     def show_laplacian_gauss_detector(self):
         self.show_threshold_fn(bdt.show_laplacian_gauss_detector)
+
+    def show_prewitt(self):
+        self.show_border_detector(bdt.show_prewitt_detector)
+
+    def show_sobel(self):
+        self.show_border_detector(bdt.show_sobel_detector)
+
+    def show_directional_border(self):
+        self.show_border_detector(bdt.show_directional_border)
 
     # ------------------------- UTILS ---------------------------------------------------------------------
     def ask_for_int(self, message: str, default: int = 1, min_value: int = 0, max_value: int = 2147483647,

@@ -17,12 +17,12 @@ if __name__ == '__main__':
     photo = MyImage('../Photos/Lenaclor.pbm')
     # lena_photo.show()
     # Para imagenes color. TODO ver que onda umbralizar pq ndeah
-    photos = photo.image.split()
-    final_image = []
-    for window in range(len(photos)):
-        final_image.append(prewitt_sobel_filters(MyImage.from_image(photos[window]), False).image)
-    final = Image.merge(photo.mode, final_image)
-    final.show()
+    # photos = photo.image.split()
+    # final_image = []
+    # for window in range(len(photos)):
+    #     final_image.append(prewitt_sobel_filters(MyImage.from_image(photos[window]), False).image)
+    # final = Image.merge(photo.mode, final_image)
+    # final.show()
     # prewitt_sobel_filters(lena_photo, True).image.show()
     # fin = anisotropic(lena_photo, FunctionDiff.LECLERC, 5.0, 50)
     # histogram(fin, True)

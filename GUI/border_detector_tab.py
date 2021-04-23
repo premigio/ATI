@@ -1,8 +1,6 @@
 import math
 
-import numpy as np
-
-from Algorithms.BorderDetection import laplacian_edge_detector
+from Algorithms.BorderDetection import *
 from Classes.MyImage import MyImage
 
 
@@ -49,11 +47,37 @@ def show_laplacian_slope_detector(my_image: MyImage, window):
 
 
 def show_laplacian_gauss_detector(my_image: MyImage, window):
-
     sigma = window.ask_for_int('Choose a sigma value',
-                                 default=1, min_value=1, text='Sigma')
+                               default=1, min_value=1, text='Sigma')
 
     mask = log_mask(sigma, sigma * 6 + 1)
     image = laplacian_edge_detector(my_image, mask)
     image.image.show()
     return image
+
+
+def __prewit_sobel_aux(my_image: MyImage, prewitt):
+    if my_image is None:
+        return
+    photos = my_image.image.split()
+    final_image = []
+    for window in range(len(photos)):
+        if prewitt is not None:
+            final_image.append(prewitt_sobel_filters(MyImage.from_image(photos[window]), prewitt).image)
+        else:
+            final_image.append(all_directions(MyImage.from_image(photos[window])).image)
+    final = Image.merge(my_image.mode, final_image)
+    final.show()
+    return MyImage.from_image(final)
+
+
+def show_prewitt_detector(my_image: MyImage, window):
+    return __prewit_sobel_aux(my_image, True)
+
+
+def show_sobel_detector(my_image: MyImage, window):
+    return __prewit_sobel_aux(my_image, False)
+
+
+def show_directional_border(my_image: MyImage, window):
+    return __prewit_sobel_aux(my_image, None)
