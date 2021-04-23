@@ -1,8 +1,24 @@
+import math
+
 import numpy as np
 from PIL import Image
 
 from Algorithms.Filters import get_pixels_around
 from Classes.MyImage import MyImage, normalization
+
+
+def log_mask(sigma: float, mask_size: int):
+    mask = np.zeros(shape=(mask_size, mask_size), dtype=float)
+    margin = math.floor(mask_size / 2)
+    range_log = range(-margin, margin + 1)
+
+    for x in range_log:
+        for y in range_log:
+            mask[x + margin][y + margin] = -(1 / (math.sqrt(2 * math.pi) * sigma ** 3)) * \
+                                           (2 - (x ** 2 + y ** 2) / sigma ** 2) * \
+                                           math.exp(- (x ** 2 + y ** 2) / (2 * sigma ** 2))
+
+    return mask
 
 
 # noinspection PyUnresolvedReferences,PyTypeChecker
@@ -92,7 +108,7 @@ def laplacian_edge_detector(my_image: MyImage, laplacian_mask, threshold: int = 
     layers = my_image.image.split()
     pixel_array = []
     for im in layers:
-        pixel_array.append(np.array(im, dtype=np.int64))
+        pixel_array.append(np.array(im, dtype=np.float))
 
     width, height = my_image.image.size
     laplacian_op = []

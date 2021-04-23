@@ -4,7 +4,7 @@ from Algorithms.BorderDetection import *
 from Classes.MyImage import MyImage
 
 
-# mask_size should be at least 4 * sigma + 1
+# mask_size should be at least 6 * sigma + 1
 def log_mask(sigma: float, mask_size: int):
     mask = np.zeros(shape=(mask_size, mask_size), dtype=float)
     margin = math.floor(mask_size / 2)

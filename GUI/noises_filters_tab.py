@@ -52,9 +52,9 @@ def show_salt_n_pepper_noise(image: MyImage, window):
     if image is None or window is None:
         return
     density = window.ask_for_float('Choose a density value',
-                                   default=50.0, min_value=0.0, max_value=100.0, text='Density')
+                                   default=20.0, min_value=0.0, max_value=100.0, text='Density')
     p0 = window.ask_for_float('Choose a threshold value',
-                              default=50.0, min_value=0.0, max_value=100.0, text='p0')
+                              default=20.0, min_value=0.0, max_value=100.0, text='p0')
     new_image = salt_n_pepper(image, density / 100.0, p0 / 100.0)
     new_image.image.show()
     return new_image

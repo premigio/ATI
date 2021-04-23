@@ -34,17 +34,17 @@ if __name__ == '__main__':
     #
     # laplacian_mask = np.array(laplacian_mask)
     #
-    # sigma = 1
-    # log_mask = log_mask(sigma, sigma * 6 + 1)
-    #
-    # a = laplacian_edge_detector(lena_photo, log_mask)
-    # a.image.show()
+    sigma = 3
+    log_mask = log_mask(sigma, sigma * 6 + 1)
+
+    a = laplacian_edge_detector(lena_photo, log_mask)
+    a.image.show()
 
     # image, curr_t, iterations = global_thresholding(lena_photo, 1)
     # print(iterations)
     # print(curr_t)
     # image.image.show()
 
-    image, t = otsu_thresholding(photo)
-    print(t)
-    image.image.show()
+    # image, t = otsu_thresholding(photo)
+    # print(t)
+    # image.image.show()
