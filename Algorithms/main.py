@@ -1,9 +1,8 @@
-from Algorithms.Filters import *
-from Algorithms.Functions import *
-from Algorithms.Noises import *
-from Algorithms.BorderDetection import *
+from Algorithms.Umbralization import global_thresholding, otsu_thresholding
+from Algorithms.Utils import *
 from Algorithms.DiffusionFilters import *
-from TP0.image import MyImage
+from Algorithms.BorderDetection import *
+from Classes.MyImage import MyImage
 
 sizeDict = {
     'LENA': (256, 256),
@@ -29,5 +28,23 @@ if __name__ == '__main__':
     # histogram(fin, True)
     # fin.image.show()
 
-    # a = bilateral_filter(photo, 7, 2, 30)
+    # laplacian_mask = [[0, -1, 0],
+    #                   [-1, 4, -1],
+    #                   [0, -1, 0]]
+    #
+    # laplacian_mask = np.array(laplacian_mask)
+    #
+    # sigma = 1
+    # log_mask = log_mask(sigma, sigma * 6 + 1)
+    #
+    # a = laplacian_edge_detector(lena_photo, log_mask)
     # a.image.show()
+
+    # image, curr_t, iterations = global_thresholding(lena_photo, 1)
+    # print(iterations)
+    # print(curr_t)
+    # image.image.show()
+
+    image, t = otsu_thresholding(photo)
+    print(t)
+    image.image.show()

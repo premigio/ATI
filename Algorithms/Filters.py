@@ -1,6 +1,6 @@
 import numpy as np
 
-from TP0.image import MyImage, normalization
+from Classes.MyImage import MyImage, normalization
 from PIL import Image
 
 

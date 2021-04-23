@@ -15,15 +15,15 @@ from GUI import config_window
 from GUI.crop_image_window import CropImage
 from GUI.mask_window import MaskImage
 from GUI.multiple_images import MultipleImageSelector
-from TP0.image import MyImage, Mode
+from Classes.MyImage import MyImage, Mode
 import GUI.functions_tab as ft
 import GUI.noises_filters_tab as nt
+import GUI.threshold_tab as tt
+import GUI.border_detector_tab as bdt
 
 import matplotlib
 
 matplotlib.use('Qt5Agg')
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
-from matplotlib.figure import Figure
 
 
 class MainWindow(QWidget):
@@ -129,6 +129,23 @@ class MainWindow(QWidget):
         self.operations_layout.addWidget(QPushButton("Select images", clicked=self.select_images))
         operations_tab.setLayout(self.operations_layout)
 
+        threshold_tab = QWidget()
+        threshold_layout = QVBoxLayout()
+        threshold_layout.setAlignment(Qt.AlignCenter)
+        threshold_layout.addWidget(QPushButton("Global threshold", clicked=self.show_global_threshold))
+        threshold_layout.addWidget(QPushButton("Otsu threshold", clicked=self.show_otsu_threshold))
+        threshold_tab.setLayout(threshold_layout)
+
+        border_detector_tab = QWidget()
+        border_detector_layout = QVBoxLayout()
+        border_detector_layout.setAlignment(Qt.AlignCenter)
+        border_detector_layout.addWidget(QPushButton("Laplacian detector", clicked=self.show_laplacian_detector))
+        border_detector_layout.addWidget(
+            QPushButton("Laplacian slope detector", clicked=self.show_laplacian_slope_detector))
+        border_detector_layout.addWidget(
+            QPushButton("Laplacian gauss detector", clicked=self.show_laplacian_gauss_detector))
+        border_detector_tab.setLayout(border_detector_layout)
+
         filter_tab = QWidget()
         filter_layout = QVBoxLayout()
         filter_layout.setAlignment(Qt.AlignCenter)
@@ -153,6 +170,8 @@ class MainWindow(QWidget):
 
         functions_tab.setLayout(functions_layout)
 
+        tabLayout.addTab(threshold_tab, "Thresholds")
+        tabLayout.addTab(border_detector_tab, "Border detectors")
         tabLayout.addTab(filter_tab, "Filters and noise")
         tabLayout.addTab(operations_tab, "Operations")
         tabLayout.addTab(functions_tab, "More functions")
@@ -393,6 +412,35 @@ class MainWindow(QWidget):
             mask_image_window = MaskImage(self.myImage)
             self.windows.append(mask_image_window)
             mask_image_window.show()
+
+    # ------------------------- THRESHOLDS ---------------------------------------------------------
+    # Generic function for thresholds
+    def show_threshold_fn(self, threshold_fn):
+        working_image = self.myImage if self.stacked_image is None else self.stacked_image
+        new_image = threshold_fn(working_image, self)
+        self.stacked_image = new_image if new_image is not None else self.stacked_image
+
+    def show_global_threshold(self):
+        self.show_threshold_fn(tt.show_global_threshold)
+
+    def show_otsu_threshold(self):
+        self.show_threshold_fn(tt.show_otsu_threshold)
+
+    # ------------------------- BORDER DETECTORS ---------------------------------------------------------
+    # Generic function for thresholds
+    def show_border_detector(self, border_detector):
+        working_image = self.myImage if self.stacked_image is None else self.stacked_image
+        new_image = border_detector(working_image, self)
+        self.stacked_image = new_image if new_image is not None else self.stacked_image
+
+    def show_laplacian_detector(self):
+        self.show_threshold_fn(bdt.show_laplacian_detector)
+
+    def show_laplacian_slope_detector(self):
+        self.show_threshold_fn(bdt.show_laplacian_slope_detector)
+
+    def show_laplacian_gauss_detector(self):
+        self.show_threshold_fn(bdt.show_laplacian_gauss_detector)
 
     # ------------------------- UTILS ---------------------------------------------------------------------
     def ask_for_int(self, message: str, default: int = 1, min_value: int = 0, max_value: int = 2147483647,

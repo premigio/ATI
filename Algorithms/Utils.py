@@ -1,10 +1,7 @@
-import os
-
-from PIL import Image, ImageDraw, ImageChops
 import numpy as np
 from matplotlib import pyplot as plt
 
-from TP0.image import MyImage
+from Classes.MyImage import MyImage
 
 
 def power(image: MyImage, gamma: float):
@@ -24,7 +21,8 @@ def histogram(image: MyImage, draw: bool = False):  # solo para color gris
     width, height = image.image.size
     for i in range(width):
         for j in range(height):
-            hist[image.my_get_pixel((i, j))] += 1
+            pixel = image.my_get_pixel((i, j))
+            hist[pixel] += 1
 
     hist = [value / (height * width) for value in hist]
 
