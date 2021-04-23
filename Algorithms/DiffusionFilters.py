@@ -4,7 +4,7 @@ from enum import Enum
 
 
 def leclerc(sigma):
-    return lambda i: (np.exp(-(i ** 2)) / (sigma ** 2))
+    return lambda i: (np.exp(-(i ** 2) / (sigma ** 2)))
 
 
 def lorentz(sigma):
@@ -46,7 +46,7 @@ def add_directions(arr, x, y, border_function, w, h):
 def anisotropic(image: MyImage, border_function: FunctionDiff, sigma: float, iterations: int = 1):
     if image is None:
         return
-    pixel_array = np.array(image.image, dtype=np.int64)
+    pixel_array = np.array(image.image, dtype=np.float64)
     pixel_array2 = pixel_array.copy()
     w, h = image.image.size
 
@@ -54,8 +54,8 @@ def anisotropic(image: MyImage, border_function: FunctionDiff, sigma: float, ite
         pixel_array = pixel_array2
         for x in range(w):
             for y in range(h):
-                pixel_array2[y][x] = pixel_array[y][x] + 0.25 * (
-                    add_directions(pixel_array, x, y, border_function(sigma), w, h))
+                pixel_array2[y][x] = pixel_array[y][x] + 0.25 * add_directions(pixel_array, x, y,
+                                                                               border_function(sigma), w, h)
 
     normalization(pixel_array2)
     fin_image = MyImage.numpy_to_image(pixel_array2, image.mode)
