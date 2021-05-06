@@ -1,10 +1,13 @@
 import math
 
-from Algorithms.BorderDetection import *
-from Classes.MyImage import MyImage
-
+from Algorithms.EdgeDetection.Canny import canny_edge_detector
+from Algorithms.EdgeDetection.EdgeDetection import *
+from Algorithms.Classes.MyImage import MyImage
 
 # mask_size should be at least 6 * sigma + 1
+from Algorithms.EdgeDetection.Susan import susan_detector
+
+
 def log_mask(sigma: float, mask_size: int):
     mask = np.zeros(shape=(mask_size, mask_size), dtype=float)
     margin = math.floor(mask_size / 2)
@@ -38,8 +41,8 @@ def show_laplacian_slope_detector(my_image: MyImage, window):
 
     laplacian_mask = np.array(laplacian_mask)
 
-    threshold = window.ask_for_float('Choose a threshold value',
-                                     default=30.0, min_value=0.0, text='Threshold')
+    threshold = window.ask_for_int('Choose a threshold value',
+                                   default=30, min_value=0.0, text='Threshold')
 
     image = laplacian_edge_detector(my_image, laplacian_mask, threshold=threshold)
     image.image.show()
@@ -50,8 +53,8 @@ def show_laplacian_gauss_detector(my_image: MyImage, window):
     sigma = window.ask_for_int('Choose a sigma value',
                                default=1, min_value=1, text='Sigma')
 
-    threshold = window.ask_for_float('Choose a threshold value',
-                                     default=30.0, min_value=0.0, text='Threshold')
+    threshold = window.ask_for_int('Choose a threshold value',
+                                   default=30, min_value=0, text='Threshold')
 
     mask = log_mask(sigma, sigma * 6 + 1)
     image = laplacian_edge_detector(my_image, mask, threshold)
@@ -84,3 +87,32 @@ def show_sobel_detector(my_image: MyImage, window):
 
 def show_directional_border(my_image: MyImage, window):
     return __prewit_sobel_aux(my_image, None)
+
+
+def show_susan_detector(my_image: MyImage, window):
+    threshold = window.ask_for_int('Choose a threshold value',
+                                   default=15, min_value=0, text='Threshold')
+    edge_value = window.ask_for_int('Choose an edge value',
+                                    default=50, min_value=0, max_value=100, text='Edge')
+    corner_value = window.ask_for_int('Choose a corner value',
+                                      default=75, min_value=0, max_value=100, text='Corner')
+    epsilon = window.ask_for_int('Choose an epsilon value',
+                                      default=10, min_value=0, max_value=100, text='Corner')
+    image = susan_detector(my_image, threshold, edge_value/100, corner_value/100, epsilon/100)
+    image.image.show()
+    return image
+
+
+def show_canny_detector(my_image: MyImage, window):
+    sigma = window.ask_for_int('Choose a sigma value',
+                               default=1, min_value=1, text='Sigma')
+
+    threshold1 = window.ask_for_int('Choose a threshold value',
+                                    default=30, min_value=0, text='Threshold 1')
+
+    threshold2 = window.ask_for_int('Choose a threshold value',
+                                    default=100, min_value=0, text='Threshold 2')
+
+    image = canny_edge_detector(my_image, sigma, threshold1, threshold2)
+    image.image.show()
+    return image

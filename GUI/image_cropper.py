@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QDesktopWidget
 from PyQt5.QtCore import Qt
 
 from GUI import config_window, crop_image_utils
-from Classes.MyImage import MyImage
+from Algorithms.Classes.MyImage import MyImage
 
 
 class ImageCropper(QWidget):

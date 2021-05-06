@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QDesktopWidget, QPushButton, Q
 from Algorithms import Filters
 from GUI import crop_image_utils
 from GUI.crop_image_window import ImageCropper
-from Classes.MyImage import MyImage
+from Algorithms.Classes.MyImage import MyImage
 
 
 class MaskImage(QWidget):

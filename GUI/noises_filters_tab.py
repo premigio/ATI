@@ -1,6 +1,6 @@
 from Algorithms.Noises import *
-from Algorithms.DiffusionFilters import *
-from Algorithms.Filters import bilateral_filter
+from Algorithms.Filters.DiffusionFilters import *
+from Algorithms.Filters.Filters import bilateral_filter
 from GUI.main_window import *
 
 

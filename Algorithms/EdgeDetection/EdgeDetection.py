@@ -1,24 +1,8 @@
-import math
-
 import numpy as np
 from PIL import Image
 
-from Algorithms.Filters import get_pixels_around
-from Classes.MyImage import MyImage, normalization
-
-
-def log_mask(sigma: float, mask_size: int):
-    mask = np.zeros(shape=(mask_size, mask_size), dtype=float)
-    margin = math.floor(mask_size / 2)
-    range_log = range(-margin, margin + 1)
-
-    for x in range_log:
-        for y in range_log:
-            mask[x + margin][y + margin] = -(1 / (math.sqrt(2 * math.pi) * sigma ** 3)) * \
-                                           (2 - (x ** 2 + y ** 2) / sigma ** 2) * \
-                                           math.exp(- (x ** 2 + y ** 2) / (2 * sigma ** 2))
-
-    return mask
+from Algorithms.Filters.Filters import get_pixels_around
+from Algorithms.Classes.MyImage import MyImage, normalization
 
 
 # noinspection PyUnresolvedReferences,PyTypeChecker
@@ -46,16 +30,32 @@ def prewitt_sobel_filters(image: MyImage, prewitt: bool):
     pixel_array = np.array(image.image, dtype=np.float64)
     pixel_array2 = pixel_array.copy()
     w, h = image.image.size
+    gx, gy = get_directional_derivatives(pixel_array, w, h, mask_h, mask_v)
 
     for i in range(w):
         for j in range(h):
-            dx = get_pixels_around(pixel_array, j, i, mask_h)
-            dy = get_pixels_around(pixel_array, j, i, mask_v)
-            pixel_array2[j][i] = (np.sum(dx) ** 2 + np.sum(dy) ** 2) ** 0.5
+            dx = gx[j, i]
+            dy = gy[j, i]
+            pixel_array2[j][i] = (dx ** 2 + dy ** 2) ** 0.5
 
     normalization(pixel_array2)
     fin_image = MyImage.numpy_to_image(pixel_array2, image.mode)
     return MyImage.from_image(fin_image, image.dimensions)
+
+
+def get_directional_derivatives(pixel_array, width, height, mask_x, mask_y):
+
+    gx = np.ndarray(shape=(width, height))
+    gy = np.ndarray(shape=(width, height))
+
+    for i in range(height):
+        for j in range(width):
+            dx = np.sum(get_pixels_around(pixel_array, i, j, mask_x))
+            dy = np.sum(get_pixels_around(pixel_array, i, j, mask_y))
+            gx[i, j] = dx
+            gy[i, j] = dy
+
+    return gx, gy
 
 
 def all_directions(image: MyImage):

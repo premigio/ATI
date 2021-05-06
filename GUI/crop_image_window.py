@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QDesktopWidget, QPushB
 
 from GUI import crop_image_utils
 from GUI.image_cropper import ImageCropper
-from Classes.MyImage import MyImage
+from Algorithms.Classes.MyImage import MyImage
 
 
 class CropImage(QWidget):

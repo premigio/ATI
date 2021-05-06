@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from Classes.MyImage import MyImage
+from Algorithms.Classes.MyImage import MyImage
 
 
 def power(image: MyImage, gamma: float):

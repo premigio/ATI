@@ -2,7 +2,7 @@ import random
 
 import numpy as np
 
-from Classes.MyImage import MyImage, normalization
+from Algorithms.Classes.MyImage import MyImage, normalization
 
 
 def salt_n_pepper(image: MyImage, density: float, p0: float):

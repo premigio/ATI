@@ -1,5 +1,5 @@
-from Algorithms.Umbralization import otsu_thresholding, global_thresholding
-from Classes.MyImage import MyImage
+from Algorithms.Thresholding import otsu_thresholding, global_thresholding
+from Algorithms.Classes.MyImage import MyImage
 
 
 def show_global_threshold(my_image: MyImage, window):

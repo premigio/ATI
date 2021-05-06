@@ -1,12 +1,9 @@
-# a) Umbralizaci ́on Global
-# b) M ́etodo de umbralizaci ́on de Otsu.
-# c) M ́etodo de umbralizaci ́on multinivel de Otsu aplicado a ima ́genes en color (RGB).
 import numpy as np
 from PIL import Image
 
 from Algorithms import Utils
 
-from Classes.MyImage import MyImage
+from Algorithms.Classes.MyImage import MyImage
 
 
 def global_thresholding(my_image: MyImage, delta_t: float):

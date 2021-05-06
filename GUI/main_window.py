@@ -15,7 +15,7 @@ from GUI import config_window
 from GUI.crop_image_window import CropImage
 from GUI.mask_window import MaskImage
 from GUI.multiple_images import MultipleImageSelector
-from Classes.MyImage import MyImage, Mode
+from Algorithms.Classes.MyImage import MyImage, Mode
 import GUI.functions_tab as ft
 import GUI.noises_filters_tab as nt
 import GUI.threshold_tab as tt
@@ -148,6 +148,10 @@ class MainWindow(QWidget):
             QPushButton("Laplacian slope detector", clicked=self.show_laplacian_slope_detector))
         border_detector_layout.addWidget(
             QPushButton("Laplacian gauss detector", clicked=self.show_laplacian_gauss_detector))
+        border_detector_layout.addWidget(
+            QPushButton("Canny detector", clicked=self.show_canny))
+        border_detector_layout.addWidget(
+            QPushButton("Susan detector", clicked=self.show_susan))
         border_detector_tab.setLayout(border_detector_layout)
 
         filter_tab = QWidget()
@@ -466,6 +470,12 @@ class MainWindow(QWidget):
 
     def show_directional_border(self):
         self.show_border_detector(bdt.show_directional_border)
+
+    def show_canny(self):
+        self.show_border_detector(bdt.show_canny_detector)
+
+    def show_susan(self):
+        self.show_border_detector(bdt.show_susan_detector)
 
     # ------------------------- UTILS ---------------------------------------------------------------------
     def ask_for_int(self, message: str, default: int = 1, min_value: int = 0, max_value: int = 2147483647,
