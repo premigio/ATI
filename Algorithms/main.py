@@ -18,12 +18,16 @@ if __name__ == '__main__':
     photo = MyImage('../Photos/Lenaclor.pbm')
     test_photo = MyImage('../Photos/TEST.pbm')
 
+    circle = MyImage.from_image(MyImage.create_circle_image((256, 256)))
+
     # img = canny_edge_detector(lena_photo, 1, 0, 100)
     # img.show()
 
     # susan = susan_detector(test_photo, 15)
     # susan.show()
     D = max(test_photo.image.size)
-    hough_line_transform(test_photo, -(2 ** 0.5) * D, (2 ** 0.5) * D, 200, size_theta=200, epsilon=2,
-                         threshold_value=250, graph_accum=True,
-                         graph_lines=True)
+    hough_circle_transform(circle, 0.0, 255.0, 64, 0.0, 255.0, 64, 0.0, 100.0, 50, epsilon=1, threshold_value=10,
+                           graph_lines=True)
+    # hough_line_transform(test_photo, -(2 ** 0.5) * D, (2 ** 0.5) * D, 200, size_theta=200, epsilon=2,
+    #                      threshold_value=250, graph_accum=True,
+    #                      graph_lines=True)

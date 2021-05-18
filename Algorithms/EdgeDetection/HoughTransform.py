@@ -109,7 +109,7 @@ def hough_circle_transform(image: MyImage, min_x: float, max_x: float, size_x: i
                            min_r: float, max_r: float, size_r: int,
                            threshold_function=otsu_thresholding, border_detection_function=sobel,
                            epsilon: float = 1.0,  # el epsilon lo necesito para encajar en la posicion especifica
-                           threshold_value=200, graph_accum=False, graph_lines=False):
+                           threshold_value=200, graph_lines=False):
     if image is None:
         return
 
@@ -134,9 +134,6 @@ def hough_circle_transform(image: MyImage, min_x: float, max_x: float, size_x: i
                             if np.abs(circle) <= epsilon:
                                 accumulator[i][j][k] += 1
 
-    # if graph_accum:
-    #     graph_accumulated2d(accumulator)
-
     final_points = []  # en el formato (x, y, r)
 
     for i, x in enumerate(x_range):
@@ -149,6 +146,7 @@ def hough_circle_transform(image: MyImage, min_x: float, max_x: float, size_x: i
         for x, y, r in final_points:
             plt.Circle((x, y), r)
         plt.title("Detected Circles")
+        plt.imshow(pixel_array, cmap="Greys")
         plt.show()
 
     return final_points
