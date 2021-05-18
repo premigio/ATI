@@ -143,8 +143,10 @@ def hough_circle_transform(image: MyImage, min_x: float, max_x: float, size_x: i
                     final_points.append((x, y, r))
 
     if graph_lines:
+        axis = plt.gca()
         for x, y, r in final_points:
-            plt.Circle((x, y), r)
+            c = plt.Circle((x, y), r, color='r', fill=False)
+            axis.add_artist(c)
         plt.title("Detected Circles")
         plt.imshow(pixel_array, cmap="Greys")
         plt.show()
