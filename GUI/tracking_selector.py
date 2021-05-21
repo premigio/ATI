@@ -23,13 +23,6 @@ class TrackingSelector(QWidget):
         self.set_layouts()
 
     def set_layouts(self):
-        if self.my_image is not None:
-            width, height = self.my_image.dimensions
-        else:
-            width, height = 300, 300
-        self.setGeometry(30, 30, width, height)
-        if self.my_image is not None:
-            self.setWindowTitle(self.my_image.file_name)
         self.center()
 
         self.select_images = QPushButton("Select images")
@@ -66,21 +59,20 @@ class TrackingSelector(QWidget):
         self.image_label.setPixmap(pixmap)
         self.main_layout.addWidget(self.image_label)
 
-        self.next_iteration = QPushButton("Next iteration")
-        self.next_iteration.clicked.connect(self.next_iteration_clicked)
-        self.main_layout.addWidget(self.next_iteration)
+        self.next_iteration_btn = QPushButton("Next iteration")
+        self.next_iteration_btn.clicked.connect(self.next_iteration_clicked)
+        self.main_layout.addWidget(self.next_iteration_btn)
+
+        self.next_10_iteration_btn = QPushButton("Next 10 iterations")
+        self.next_10_iteration_btn.clicked.connect(self.next_10_iterations_clicked)
+        self.main_layout.addWidget(self.next_10_iteration_btn)
 
         self.next_image = QPushButton("Next image")
         self.next_image.clicked.connect(self.next_image_clicked)
         self.main_layout.addWidget(self.next_image)
 
-    def next_iteration_clicked(self):
-        # self.segmentation.change_image()
-        # qim = ImageQt(self.my_image.image)
-        # pixmap = QPixmap.fromImage(qim).scaled(self.image_label.width(), self.image_label.height(),
-        #                                        QtCore.Qt.KeepAspectRatio)
-        # self.image_label.setPixmap(pixmap)
-        self.iteration = self.iteration + 1
+    def next_iteration(self, step=1):
+        self.iteration = self.iteration + step
         if self.iteration >= len(self.iteration_images):
             return
         qim = ImageQt(self.iteration_images[self.iteration].image)
@@ -88,15 +80,23 @@ class TrackingSelector(QWidget):
                                                QtCore.Qt.KeepAspectRatio)
         self.image_label.setPixmap(pixmap)
 
+    def next_iteration_clicked(self):
+        self.next_iteration()
+
+    def next_10_iterations_clicked(self):
+        self.next_iteration(step=10)
+
     def next_image_clicked(self):
-        self.iteration = 0
+
         self.next_image_index = self.next_image_index + 1
+
+        if self.next_image_index >= len(self.my_images):
+            return
+
+        self.iteration = 0
         self.my_image = self.my_images[self.next_image_index]
         self.segmentation.change_image(self.my_image)
         self.iteration_images = self.segmentation.get_iterations()
-        for it_img in self.iteration_images:
-            it_img.image.show()
-        self.image_label = QLabel(alignment=(Qt.AlignVCenter | Qt.AlignHCenter))
         qim = ImageQt(self.iteration_images[self.iteration].image)
         pixmap = QPixmap.fromImage(qim).scaled(self.image_label.width(), self.image_label.height(),
                                                QtCore.Qt.KeepAspectRatio)
