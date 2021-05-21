@@ -13,6 +13,8 @@ sizeDict = {
     'FRACTAL': (389, 164),
 }
 
+# Explicar Canny, Susan, Hough <-- probar parametros menores, y con ruido. Que se vea el video
+
 if __name__ == '__main__':
     lena_photo = MyImage('../Photos/LENA.RAW', sizeDict['LENA'])
     photo = MyImage('../Photos/Lenaclor.pbm')
