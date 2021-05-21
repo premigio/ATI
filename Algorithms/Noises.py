@@ -1,6 +1,7 @@
 import random
 
 import numpy as np
+from PIL import Image
 
 from Algorithms.Classes.MyImage import MyImage, normalization
 
@@ -29,15 +30,30 @@ def noise_apply(image: MyImage, percentage: float, add_multiply, noise_function)
     w, h = image.image.size
     pixel_array = np.array(image.image, dtype=np.int64)
 
+    layers = image.image.split()
+    w, h = image.image.size
+
+    pixel_array = []
+
+    for im in layers:
+        pixel_array.append(np.array(im, dtype=np.float64))
+
+    pixel_array2 = pixel_array.copy()
+
     for i in range(h):
         for j in range(w):
-            random_value = random.random()
-            if random_value < percentage:  # asi puedo cambiar el siguiente porcentaje apenas de los pixeles.
-                pixel_array[i][j] = add_multiply(pixel_array[i][j], noise_function())
+            for k in range(len(layers)):
+                random_value = random.random()
+                if random_value < percentage:  # asi puedo cambiar el siguiente porcentaje apenas de los pixeles.
+                    pixel_array2[k][i][j] = add_multiply(pixel_array2[k][i][j], noise_function())
 
-    pixel_array = normalization(pixel_array)
-    fin_image = MyImage.numpy_to_image(pixel_array, image.mode)
-    return MyImage.from_image(fin_image, image.dimensions)
+    final_image = []
+    for band in range(len(layers)):
+        pixel_array_layer = normalization(pixel_array2[band])
+        final_image.append(MyImage.numpy_to_image(pixel_array_layer, layers[band].mode))
+
+    final = Image.merge(image.mode, final_image)
+    return MyImage.from_image(final, image.dimensions)
 
 
 def gaussian_additive(image: MyImage, percentage: float, mean: float, deviation: float):

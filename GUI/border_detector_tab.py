@@ -185,10 +185,10 @@ def show_hough_line_detector(my_image: MyImage, window):
         return
     D = max(my_image.image.size)
 
-    min_rho = window.ask_for_float('Choose min ρ value', default=(-(2 ** 0.5) * D), text="min ρ")
+    min_rho = window.ask_for_float('Choose min ρ value', default=(-(2 ** 0.5) * D), min_value=(-9999999.0), text="min ρ")
     max_rho = window.ask_for_float('Choose max ρ value', default=((2 ** 0.5) * D), text="max ρ")
     size_rho = window.ask_for_int('Choose number of ρ values', default=200, text="number of ρ")
-    min_theta = window.ask_for_float('Choose min θ value', default=(-90.0), text="min θ")
+    min_theta = window.ask_for_float('Choose min θ value', default=(-90.0), min_value=(-180.0), text="min θ")
     max_theta = window.ask_for_float('Choose max θ value', default=90.0, text="max θ")
     size_theta = window.ask_for_int('Choose number of θ values', default=200, text="number of θ")
     epsilon = window.ask_for_float('Choose a value for epsilon', default=2, text="epsilon")
