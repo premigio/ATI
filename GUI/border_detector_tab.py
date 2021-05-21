@@ -1,4 +1,9 @@
 import math
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+
+from GUI.graph_window import GraphWindow
+from PyQt5 import QtWidgets
 
 from Algorithms.EdgeDetection.Canny import canny_edge_detector
 from Algorithms.EdgeDetection.EdgeDetection import *
@@ -120,6 +125,61 @@ def show_canny_detector(my_image: MyImage, window):
     return image
 
 
+def __graph_accumulated(accumulator, x_label, y_label, window):
+    sc = GraphWindow(window, width=5, height=4, dpi=100)
+
+    sc.axes.set_xlabel(x_label)
+    sc.axes.set_ylabel(y_label)
+
+    toolbar = NavigationToolbar(sc, window)
+
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(toolbar)
+    layout.addWidget(sc)
+
+    sb.heatmap(accumulator, cmap="Blues")
+
+    widget = QtWidgets.QWidget()
+    widget.setLayout(layout)
+    widget.setWindowTitle("Hough Space")
+    return widget
+
+
+def __graph_final_points(pixel_array, final_points, window):
+    w, h = pixel_array.shape
+
+    sc = GraphWindow(window, width=5, height=4, dpi=100)
+
+    for rho, theta in final_points:
+        sine = np.sin(np.deg2rad(theta))
+        cosine = np.cos(np.deg2rad(theta))
+
+        if np.abs(sine) > EPSILON_SINE_COSINE and np.abs(cosine) > EPSILON_SINE_COSINE:
+            x = np.array(range(0, w))
+            y = (rho - x * cosine) / sine
+        elif np.abs(sine) <= EPSILON_SINE_COSINE:
+            x = np.full((h,), rho)
+            y = np.array(range(0, h))
+        else:
+            x = np.array(range(0, w))
+            y = np.full((w,), rho)
+        sc.axes.plot(x, y)
+    sc.axes.imshow(pixel_array, cmap="Greys")
+    # plt.axis('off')
+
+    toolbar = NavigationToolbar(sc, window)
+
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(toolbar)
+    layout.addWidget(sc)
+
+    widget = QtWidgets.QWidget()
+    widget.setLayout(layout)
+    widget.setWindowTitle("Detected Lines")
+
+    return widget
+
+
 def show_hough_line_detector(my_image: MyImage, window):
     if my_image is None or my_image.image is None:
         return
@@ -134,10 +194,16 @@ def show_hough_line_detector(my_image: MyImage, window):
     epsilon = window.ask_for_float('Choose a value for epsilon', default=2, text="epsilon")
     threshold_value = window.ask_for_int('Choose a value for the threshold', default=250, text="threshold")
 
-    hough_line_transform(my_image, min_rho, max_rho, size_rho, min_theta, max_theta, size_theta, epsilon,
-                         threshold_value=threshold_value, graph_accum=True,
-                         graph_lines=True)
-    return
+    final_points, accumulator, pixel_array = hough_line_transform(my_image, min_rho, max_rho, size_rho, min_theta,
+                                                                  max_theta,
+                                                                  size_theta, epsilon=epsilon,
+                                                                  threshold_value=threshold_value, graph_accum=True,
+                                                                  graph_lines=False)
+
+    # w1 = __graph_accumulated(accumulator, "ρ", "θ", window)
+    w2 = __graph_final_points(pixel_array, final_points, window)
+
+    return w2  # w1
 
 
 def show_hough_circle_detector(my_image: MyImage, window):
@@ -156,7 +222,7 @@ def show_hough_circle_detector(my_image: MyImage, window):
     epsilon = window.ask_for_float('Choose a value for epsilon', default=1, text="epsilon")
     threshold_value = window.ask_for_int('Choose a value for the threshold', default=5, text="threshold")
 
-    hough_circle_transform(my_image, min_x, max_x, size_x, min_y, max_y, size_y, min_r, max_r, size_r, epsilon,
-                           threshold_value, graph_lines=True)
+    hough_circle_transform(my_image, min_x, max_x, size_x, min_y, max_y, size_y, min_r, max_r, size_r, epsilon=epsilon,
+                           threshold_value=threshold_value, graph_lines=True)
 
     return

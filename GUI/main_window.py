@@ -28,6 +28,7 @@ from GUI.tracking_selector import TrackingSelector
 matplotlib.use('Qt5Agg')
 
 
+
 class MainWindow(QWidget):
     stacked_image: Optional[Image]
     my_image_hsv: object
@@ -350,13 +351,17 @@ class MainWindow(QWidget):
         widget.show()
 
     # ------------------------- GENERATORS ---------------------------------------------------
-    @staticmethod
-    def show_square():
-        MyImage.create_square_image().show()
+    def show_square(self):
+        working_image = self.myImage if self.stacked_image is None else self.stacked_image
+        new_image = MyImage.create_square_image()
+        new_image.show()
+        self.stacked_image = new_image if new_image is not None else self.stacked_image
 
-    @staticmethod
-    def show_circle():
-        MyImage.create_circle_image().show()
+    def show_circle(self):
+        working_image = self.myImage if self.stacked_image is None else self.stacked_image
+        new_image = MyImage.create_circle_image((256, 256))
+        new_image.show()
+        self.stacked_image = new_image if new_image is not None else self.stacked_image
 
     # ------------------------- NOISES and FILTERS -----------------------------------------------
     # Generic function for noises
@@ -458,7 +463,7 @@ class MainWindow(QWidget):
     # Generic function for thresholds
     def show_border_detector(self, border_detector):
         working_image = self.myImage if self.stacked_image is None else self.stacked_image
-        new_image = border_detector(working_image, self)
+        new_image = border_detector(MyImage.from_image(working_image), self)
         self.stacked_image = new_image if new_image is not None else self.stacked_image
 
     def show_laplacian_detector(self):
@@ -486,7 +491,14 @@ class MainWindow(QWidget):
         self.show_border_detector(bdt.show_susan_detector)
 
     def show_hough_line(self):
-        self.show_border_detector(bdt.show_hough_line_detector)
+        working_image = self.myImage if self.stacked_image is None else self.stacked_image
+        w1 = bdt.show_hough_line_detector(working_image, self)
+        self.windows.append(w1)
+        w1.show()
+        # self.windows.append(w2)
+        # w2.show()
+
+
 
     def show_hough_circle(self):
         self.show_border_detector(bdt.show_hough_circle_detector)

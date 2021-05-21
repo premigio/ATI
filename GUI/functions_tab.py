@@ -2,6 +2,9 @@ from GUI.main_window import *
 from GUI.graph_window import GraphWindow
 from Algorithms.Utils import *
 
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+
 
 def show_power(image: MyImage, window: MainWindow):
     if image is None or window is None:
