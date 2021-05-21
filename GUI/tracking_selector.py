@@ -1,14 +1,12 @@
-import numpy
 from PIL.ImageQt import ImageQt
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QDesktopWidget, QPushButton, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QDesktopWidget, QPushButton
 
-from Algorithms.EdgeDetection.Segmentation import Segmentation
-from GUI import crop_image_utils
-from GUI.image_cropper import ImageCropper
 from Algorithms.Classes.MyImage import MyImage
+from Algorithms.EdgeDetection.Segmentation import Segmentation
+from GUI.image_cropper import ImageCropper
 
 
 class TrackingSelector(QWidget):
