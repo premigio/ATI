@@ -28,7 +28,6 @@ from GUI.tracking_selector import TrackingSelector
 matplotlib.use('Qt5Agg')
 
 
-
 class MainWindow(QWidget):
     stacked_image: Optional[Image]
     my_image_hsv: object
@@ -498,16 +497,13 @@ class MainWindow(QWidget):
         # self.windows.append(w2)
         # w2.show()
 
-
-
     def show_hough_circle(self):
         self.show_border_detector(bdt.show_hough_circle_detector)
 
     def show_segmentation(self):
-        if self.myImage is not None:
-            tracking_window = TrackingSelector(self.myImage)
-            self.windows.append(tracking_window)
-            tracking_window.show()
+        tracking_window = TrackingSelector()
+        self.windows.append(tracking_window)
+        tracking_window.show()
 
     # ------------------------- UTILS ---------------------------------------------------------------------
     def ask_for_int(self, message: str, default: int = 1, min_value: int = 0, max_value: int = 2147483647,

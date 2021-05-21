@@ -21,7 +21,7 @@ from Algorithms.Classes.MyImage import MyImage
 
 
 class Segmentation:
-    def __init__(self, my_image: MyImage, crop_area: ((int, int), (int, int)), iterations: int, epsilon: float):
+    def __init__(self, my_image: MyImage, crop_area: ((int, int), (int, int)), epsilon: float, iterations=10000):
         self.curr_image = my_image
         self.layers = my_image.image.split()
         self.crop_area: ((int, int), (int, int)) = crop_area
@@ -74,6 +74,7 @@ class Segmentation:
     def change_image(self, my_image: MyImage):
         self.curr_image = my_image
         self.layers = my_image.image.split()
+        self.all_images = [self.get_image_edges()]
         self.segment()
 
     def get_image_edges(self) -> MyImage:
