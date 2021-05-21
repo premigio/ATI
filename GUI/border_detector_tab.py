@@ -6,6 +6,7 @@ from Algorithms.EdgeDetection.HoughTransform import *
 from Algorithms.Classes.MyImage import MyImage
 
 # mask_size should be at least 6 * sigma + 1
+from Algorithms.EdgeDetection.Segmentation import Segmentation
 from Algorithms.EdgeDetection.Susan import susan_detector
 
 

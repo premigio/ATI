@@ -23,6 +23,8 @@ import GUI.border_detector_tab as bdt
 
 import matplotlib
 
+from GUI.tracking_selector import TrackingSelector
+
 matplotlib.use('Qt5Agg')
 
 
@@ -153,9 +155,11 @@ class MainWindow(QWidget):
         border_detector_layout.addWidget(
             QPushButton("Susan detector", clicked=self.show_susan))
         border_detector_layout.addWidget(
-            QPushButton("Hough line detector", clicked=self.show_hough_line()))
+            QPushButton("Hough line detector", clicked=self.show_hough_line))
         border_detector_layout.addWidget(
-            QPushButton("Hough circle detector", clicked=self.show_hough_circle()))
+            QPushButton("Hough circle detector", clicked=self.show_hough_circle))
+        border_detector_layout.addWidget(
+            QPushButton("Segmentation", clicked=self.show_segmentation))
         border_detector_tab.setLayout(border_detector_layout)
 
         filter_tab = QWidget()
@@ -486,6 +490,12 @@ class MainWindow(QWidget):
 
     def show_hough_circle(self):
         self.show_border_detector(bdt.show_hough_circle_detector)
+
+    def show_segmentation(self):
+        if self.myImage is not None:
+            tracking_window = TrackingSelector(self.myImage)
+            self.windows.append(tracking_window)
+            tracking_window.show()
 
     # ------------------------- UTILS ---------------------------------------------------------------------
     def ask_for_int(self, message: str, default: int = 1, min_value: int = 0, max_value: int = 2147483647,
