@@ -27,19 +27,6 @@ def graph_accumulated2d(accumulator, x_label, y_label):
     plt.show()
 
 
-def graph_accumulated3d(accumulator, x_label, y_label, z_label):
-    sb.heatmap(accumulator, cmap="Blues"
-               # , xticklabels=np.array(r_range),
-               # yticklabels=np.array(t_range)
-               )
-    plt.title("Hough Space")
-    ax = plt.axes(projection="3d")
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-    plt.zlabel(z_label)
-    plt.show()
-
-
 EPSILON_SINE_COSINE = 0.01
 
 
@@ -101,7 +88,7 @@ def hough_line_transform(image: MyImage, min_rho: float, max_rho: float, size_rh
         plt.title("Detected Lines")
         plt.show()
 
-    return final_points
+    return final_points, accumulator, pixel_array
 
 
 def hough_circle_transform(image: MyImage, min_x: float, max_x: float, size_x: int,
