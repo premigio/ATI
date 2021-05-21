@@ -82,7 +82,7 @@ class Segmentation:
         width, height = image.size
 
         for pixel in self.lin:
-            new_pixel = (245, 0, 135)
+            new_pixel = (182, 149, 192)
             image.putpixel(pixel, new_pixel)
 
         for pixel in self.lout:
@@ -114,7 +114,8 @@ class Segmentation:
                     new_lin.append(x)
                     neighbours = self.neighbours(x)
                     for y in neighbours:
-                        if self.phi(y, new_lin, new_lout) == 3:
+                        y_phi = self.phi(y, new_lin, new_lout)
+                        if y_phi == -3 or y_phi == 3:
                             new_lout.append(y)
 
             self.lin = new_lin.copy()
@@ -141,7 +142,8 @@ class Segmentation:
                     new_lout.append(x)
                     neighbours = self.neighbours(x)
                     for y in neighbours:
-                        if self.phi(y, new_lin, new_lout) == -3:
+                        y_phi = self.phi(y, new_lin, new_lout)
+                        if y_phi == -3 or y_phi == 3:
                             new_lin.append(y)
 
             self.lout = new_lout.copy()
