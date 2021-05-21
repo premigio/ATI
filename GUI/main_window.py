@@ -360,7 +360,7 @@ class MainWindow(QWidget):
         working_image = self.myImage if self.stacked_image is None else self.stacked_image
         new_image = MyImage.create_circle_image((256, 256))
         new_image.show()
-        self.stacked_image = new_image if new_image is not None else self.stacked_image
+        self.stacked_image = MyImage.from_image(new_image) if new_image is not None else self.stacked_image
 
     # ------------------------- NOISES and FILTERS -----------------------------------------------
     # Generic function for noises
@@ -462,7 +462,7 @@ class MainWindow(QWidget):
     # Generic function for thresholds
     def show_border_detector(self, border_detector):
         working_image = self.myImage if self.stacked_image is None else self.stacked_image
-        new_image = border_detector(MyImage.from_image(working_image), self)
+        new_image = border_detector(working_image, self)
         self.stacked_image = new_image if new_image is not None else self.stacked_image
 
     def show_laplacian_detector(self):
