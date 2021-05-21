@@ -34,6 +34,7 @@ class Segmentation:
         self.std_area()
         self.init_curve()
         self.theta_obj = self.theta()
+        self.all_images = [self.get_image_edges()]
         self.segment()
 
     def std_area(self):
@@ -90,6 +91,9 @@ class Segmentation:
 
         return MyImage.from_image(image, (width, height))
 
+    def get_iterations(self):
+        return self.all_images
+
     def segment(self):
 
         condition = True
@@ -118,12 +122,13 @@ class Segmentation:
             # Eliminate redundant points in Lin. Scan through Lin.
             # For each point x ∈ Lin, if ∀y ∈ N(x), φˆ(y) < 0, delete x from Lin, and set φˆ(x) = −3.
             for x in self.lin:
-                neighbours = self.neighbours(x)
-                every_y = True
-                for y in neighbours:
-                    if self.phi(y, new_lin, new_lout) > 0:
-                        every_y = False
-                if every_y:
+                any_lout = False
+                for y in self.neighbours(x):
+                    y_phi = self.phi(y, new_lin, new_lout)
+                    if y_phi == -1:
+                        any_lout = True
+                        break
+                if not any_lout:
                     new_lin.remove(x)
 
             self.lin = new_lin.copy()
@@ -144,17 +149,19 @@ class Segmentation:
             # Eliminate redundant points in Lout. Scan through Lout.
             # For each point x ∈ Lout, if ∀y ∈ N(x), φˆ(y) > 0, delete x from Lout, and set φˆ(x) = 3.
             for x in self.lout:
-                neighbours = self.neighbours(x)
-                every_y = True
-                for y in neighbours:
-                    if self.phi(y, new_lin, new_lout) < 0:
-                        every_y = False
-                if every_y:
+                any_lout = False
+                for y in self.neighbours(x):
+                    y_phi = self.phi(y, new_lin, new_lout)
+                    if y_phi == 1:
+                        any_lout = True
+                        break
+                if not any_lout:
                     new_lout.remove(x)
 
             self.lout = new_lout
             self.lin = new_lin
             iterations += 1
+            self.all_images.append(self.get_image_edges())
 
     def phi(self, pixel: Tuple[int, int], lin: List[Tuple[int, int]], lout: List[Tuple[int, int]]):
 
@@ -195,17 +202,17 @@ class Segmentation:
         return np.array([float(color) / (x * y) for color in colors_accum])
 
     def neighbours(self, pixel: Tuple[int, int]):
-        crop_from, crop_to = self.crop_area
+        w, h = self.curr_image.dimensions
 
         neighbours = []
 
-        if pixel[0] - 1 >= crop_from[0]:
+        if pixel[0] - 1 >= 0:
             neighbours.append((pixel[0] - 1, pixel[1]))
-        if pixel[0] + 1 < crop_to[0]:
+        if pixel[0] + 1 < w:
             neighbours.append((pixel[0] + 1, pixel[1]))
-        if pixel[1] - 1 >= crop_from[1]:
+        if pixel[1] - 1 >= 0:
             neighbours.append((pixel[0], pixel[1] - 1))
-        if pixel[1] + 1 < crop_to[1]:
+        if pixel[1] + 1 < h:
             neighbours.append((pixel[0], pixel[1] + 1))
 
         return neighbours
