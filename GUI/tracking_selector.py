@@ -1,3 +1,5 @@
+import time
+
 from PIL.ImageQt import ImageQt
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
@@ -41,8 +43,10 @@ class TrackingSelector(QWidget):
         crop_from, crop_to = self.image_cropper.get_crop()
         epsilon = float(self.epsilonLineEdit.text())
         iterations = int(self.iterationsLineEdit.text())
+        startTime = time.time()
         self.segmentation = Segmentation(self.my_image, ((crop_from.x(), crop_from.y()), (crop_to.x(), crop_to.y())),
                                          epsilon, iterations)
+        finishTime = round(time.time() - startTime, 2)
         self.iteration_images = self.segmentation.get_iterations()
 
         # Update layout
@@ -58,6 +62,9 @@ class TrackingSelector(QWidget):
                                                QtCore.Qt.KeepAspectRatio)
         self.image_label.setPixmap(pixmap)
         self.main_layout.addWidget(self.image_label)
+
+        self.time_label = QLabel("Time spent (s): " + str(finishTime), alignment=Qt.AlignRight)
+        self.main_layout.addWidget(self.time_label)
 
         self.next_iteration_btn = QPushButton("Next iteration")
         self.next_iteration_btn.clicked.connect(self.next_iteration_clicked)
@@ -95,7 +102,10 @@ class TrackingSelector(QWidget):
 
         self.iteration = 0
         self.my_image = self.my_images[self.next_image_index]
+        startTime = time.time()
         self.segmentation.change_image(self.my_image)
+        finishTime = round(time.time() - startTime, 2)
+        self.time_label.setText("Time spent (s): " + str(finishTime))
         self.iteration_images = self.segmentation.get_iterations()
         qim = ImageQt(self.iteration_images[self.iteration].image)
         pixmap = QPixmap.fromImage(qim).scaled(self.image_label.width(), self.image_label.height(),
@@ -135,4 +145,3 @@ class TrackingSelector(QWidget):
         iterations_layout.addWidget(self.iterations_label)
         iterations_layout.addWidget(self.iterationsLineEdit)
         self.main_layout.addLayout(iterations_layout)
-

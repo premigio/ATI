@@ -12,10 +12,10 @@
 # Seguimiento en video:
 # En el primer cuadro se elige el objeto a seguir con un rectángulo, ese rectángulo es la curva inicial.
 # En los cuadros siguientes, la curva inicial está dada por la curva resultante del cuadro anterior.
+import time
 from typing import Tuple, List
 
 import numpy as np
-from PIL.Image import Image
 
 from Algorithms.Classes.MyImage import MyImage
 
@@ -34,7 +34,7 @@ class Segmentation:
         self.std_area()
         self.init_curve()
         self.theta_obj = self.theta()
-        self.all_images = [self.get_image_edges()]
+        self.all_edges = [[self.lout, self.lin]]
         self.segment()
 
     def std_area(self):
@@ -74,26 +74,30 @@ class Segmentation:
     def change_image(self, my_image: MyImage):
         self.curr_image = my_image
         self.layers = my_image.image.split()
-        self.all_images = [self.get_image_edges()]
+        self.all_edges = [[self.lout, self.lin]]
         self.segment()
 
-    def get_image_edges(self) -> MyImage:
+    def get_image_edges(self, lout, lin) -> MyImage:
 
         image = self.curr_image.image.copy()
         width, height = image.size
 
-        for pixel in self.lin:
+        for pixel in lin:
             new_pixel = (182, 149, 192)
             image.putpixel(pixel, new_pixel)
 
-        for pixel in self.lout:
+        for pixel in lout:
             new_pixel = (255, 255, 0)
             image.putpixel(pixel, new_pixel)
 
         return MyImage.from_image(image, (width, height))
 
     def get_iterations(self):
-        return self.all_images
+
+        all_images = []
+        for edge in self.all_edges:
+            all_images.append(self.get_image_edges(edge[0], edge[1]))
+        return all_images
 
     def segment(self):
 
@@ -164,7 +168,7 @@ class Segmentation:
             self.lout = new_lout
             self.lin = new_lin
             iterations += 1
-            self.all_images.append(self.get_image_edges())
+            self.all_edges.append([self.lout, self.lin])
 
     def phi(self, pixel: Tuple[int, int], lin: List[Tuple[int, int]], lout: List[Tuple[int, int]]):
 
