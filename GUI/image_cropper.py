@@ -14,9 +14,6 @@ class ImageCropper(QWidget):
         super().__init__()
         self.my_image = image
         self.image_label = QLabel(alignment=(Qt.AlignVCenter | Qt.AlignHCenter))
-        self.image_label.setFixedSize(300, 300)
-        self.image_label.setStyleSheet(
-            "QLabel { border-style: solid; border-width: 2px; border-color: rgba(0, 0, 0, 0.1); }")
         qim = ImageQt(self.my_image.image)
         pixmap = QPixmap.fromImage(qim).scaled(self.image_label.width(), self.image_label.width(),
                                                QtCore.Qt.KeepAspectRatio)
