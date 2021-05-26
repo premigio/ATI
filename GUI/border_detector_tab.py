@@ -210,10 +210,10 @@ def show_hough_circle_detector(my_image: MyImage, window):
     if my_image is None or my_image.image is None:
         return
 
-    min_x = window.ask_for_float('Choose min x value', default=0.0, text="min x")
+    min_x = window.ask_for_float('Choose min x value', default=0.0, min_value=(-9999999.0), text="min x")
     max_x = window.ask_for_float('Choose max x value', default=255.0, text="max x")
     size_x = window.ask_for_int('Choose number of x values', default=64, text="number of x")
-    min_y = window.ask_for_float('Choose min y value', default=0.0, text="min y")
+    min_y = window.ask_for_float('Choose min y value', default=0.0, min_value=(-9999999.0), text="min y")
     max_y = window.ask_for_float('Choose max y value', default=255.0, text="max y")
     size_y = window.ask_for_int('Choose number of y values', default=64, text="number of y")
     min_r = window.ask_for_float('Choose min r value', default=0.0, text="min r")
