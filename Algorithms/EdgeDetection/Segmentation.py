@@ -12,7 +12,6 @@
 # Seguimiento en video:
 # En el primer cuadro se elige el objeto a seguir con un rectángulo, ese rectángulo es la curva inicial.
 # En los cuadros siguientes, la curva inicial está dada por la curva resultante del cuadro anterior.
-import time
 from typing import Tuple, List
 
 import numpy as np
@@ -99,6 +98,9 @@ class Segmentation:
             all_images.append(self.get_image_edges(edge[0], edge[1]))
         return all_images
 
+    def get_last_iteration(self):
+        return self.get_image_edges(self.all_edges[len(self.all_edges)-1][0], self.all_edges[len(self.all_edges)-1][1])
+
     def segment(self):
 
         condition = True
@@ -169,6 +171,7 @@ class Segmentation:
             self.lin = new_lin
             iterations += 1
             self.all_edges.append([self.lout, self.lin])
+        print(iterations)
 
     def phi(self, pixel: Tuple[int, int], lin: List[Tuple[int, int]], lout: List[Tuple[int, int]]):
 

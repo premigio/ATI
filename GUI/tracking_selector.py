@@ -1,4 +1,6 @@
+import threading
 import time
+import ffmpeg
 
 from PIL.ImageQt import ImageQt
 from PyQt5 import QtCore
@@ -40,12 +42,13 @@ class TrackingSelector(QWidget):
         self.move(qr.topLeft())
 
     def on_crop_finished(self):
-        crop_from, crop_to = self.image_cropper.get_crop()
-        epsilon = float(self.epsilonLineEdit.text())
-        iterations = int(self.iterationsLineEdit.text())
+        self.crop_from, self.crop_to = self.image_cropper.get_crop()
+        self.epsilon = float(self.epsilonLineEdit.text())
+        self.iterations = int(self.iterationsLineEdit.text())
         startTime = time.time()
-        self.segmentation = Segmentation(self.my_image, ((crop_from.x(), crop_from.y()), (crop_to.x(), crop_to.y())),
-                                         epsilon, iterations)
+        self.segmentation = Segmentation(self.my_image, ((self.crop_from.x(), self.crop_from.y()),
+                                                         (self.crop_to.x(), self.crop_to.y())),
+                                         self.epsilon, self.iterations)
         finishTime = round(time.time() - startTime, 2)
         self.iteration_images = self.segmentation.get_iterations()
 
@@ -77,6 +80,10 @@ class TrackingSelector(QWidget):
         self.next_image = QPushButton("Next image")
         self.next_image.clicked.connect(self.next_image_clicked)
         self.main_layout.addWidget(self.next_image)
+
+        self.export_video_btn = QPushButton("Export to video")
+        self.export_video_btn.clicked.connect(self.export_video)
+        self.main_layout.addWidget(self.export_video_btn)
 
     def next_iteration(self, step=1):
         self.iteration = self.iteration + step
@@ -112,16 +119,37 @@ class TrackingSelector(QWidget):
                                                QtCore.Qt.KeepAspectRatio)
         self.image_label.setPixmap(pixmap)
 
+    def export_video(self):
+        thread = threading.Thread(target=self.run, args=())
+        thread.daemon = True  # Daemonize thread
+        thread.start()  # Start the execution
+
+    def run(self):
+        segmentation = Segmentation(self.my_images[0], ((self.crop_from.x(), self.crop_from.y()),
+                                                        (self.crop_to.x(), self.crop_to.y())),
+                                    self.epsilon, self.iterations)
+        frames = [None] * len(self.my_images)
+        frames[0] = segmentation.get_last_iteration()
+        for i in range(1, len(self.my_images)):
+            segmentation.change_image(self.my_images[i])
+            frames[i] = segmentation.get_last_iteration()
+
+        index = 0
+        for frame in frames:
+            frame.image.save("../Photos/resultados/frame" + str(index) + ".jpg")
+            index += 1
+
+        ffmpeg.input('../Photos/resultados/*.jpg', pattern_type='glob', framerate=10)\
+            .output('../Photos/resultados/movie.mp4').run()
+
     def select_images_clicked(self):
         options = QFileDialog.Options()
         filePaths, _ = QFileDialog.getOpenFileNames(self, "Select image file", "../Photos",
                                                     "Images (*.jpg *.jpeg *.raw *.pbm *.ppm *.pgm *.RAW *.png)",
                                                     options=options)
 
-        filePaths.sort()
-        images_paths = filePaths
         self.my_images = []
-        for path in images_paths:
+        for path in filePaths:
             self.my_images.append(MyImage(path))
         self.my_image = self.my_images[0]
         width, height = self.my_image.dimensions
