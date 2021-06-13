@@ -160,6 +160,8 @@ class MainWindow(QWidget):
             QPushButton("Hough circle detector", clicked=self.show_hough_circle))
         border_detector_layout.addWidget(
             QPushButton("Segmentation", clicked=self.show_segmentation))
+        border_detector_layout.addWidget(
+            QPushButton("Harris corner detector", clicked=self.show_harris))
         border_detector_tab.setLayout(border_detector_layout)
 
         filter_tab = QWidget()
@@ -505,6 +507,9 @@ class MainWindow(QWidget):
         self.windows.append(tracking_window)
         tracking_window.show()
 
+    def show_harris(self):
+        self.show_border_detector(bdt.show_harris_corner_detector)
+
     # ------------------------- UTILS ---------------------------------------------------------------------
     def ask_for_int(self, message: str, default: int = 1, min_value: int = 0, max_value: int = 2147483647,
                     text: str = "Enter integer value"):
@@ -512,8 +517,9 @@ class MainWindow(QWidget):
         return int_val
 
     def ask_for_float(self, message: str, default: float = 1, min_value: float = 0, max_value: float = 2147483647,
-                      text: str = "Enter float value"):
-        float_val, _ = QInputDialog.getDouble(self, text, message, default, min=min_value, max=max_value)
+                      text: str = "Enter float value", decimals: int = 1):
+        float_val, _ = QInputDialog.getDouble(self, text, message, default, min=min_value, max=max_value,
+                                              decimals=decimals)
         return float_val
 
 

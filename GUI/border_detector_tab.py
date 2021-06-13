@@ -2,6 +2,7 @@ import math
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
+from Algorithms.EdgeDetection.Harris import harris_detector
 from GUI.graph_window import GraphWindow
 from PyQt5 import QtWidgets
 
@@ -226,3 +227,21 @@ def show_hough_circle_detector(my_image: MyImage, window):
                            threshold_value=threshold_value, graph_lines=True)
 
     return
+
+
+def show_harris_corner_detector(my_image: MyImage, window):
+
+    if my_image is None:
+        return
+
+    percentile = window.ask_for_float('Choose corner percentile', default=98.0, max_value=100.0,
+                                   text="Percentile", decimals=2)
+    sigma = window.ask_for_int('Choose sigma', default=2, text="Sigma")
+    k = window.ask_for_float('Choose k value', default=0.04, text='K', decimals=2)
+
+    if k is None or percentile is None or sigma is None:
+        return
+
+    image = harris_detector(my_image, sigma, k, percentile)
+    image.image.show()
+    return image

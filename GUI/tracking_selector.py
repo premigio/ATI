@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QDesktopWidget, QPushB
 from Algorithms.Classes.MyImage import MyImage
 from Algorithms.EdgeDetection.Segmentation import Segmentation
 from GUI.image_cropper import ImageCropper
+from GUI.video_player import VideoPlayer
 
 
 class TrackingSelector(QWidget):
@@ -24,6 +25,7 @@ class TrackingSelector(QWidget):
         self.next_image_index = 0
         self.my_images = None
         self.iteration_images = []
+        self.windows = []
         self.set_layouts()
 
     def set_layouts(self):
@@ -66,8 +68,12 @@ class TrackingSelector(QWidget):
         self.image_label.setPixmap(pixmap)
         self.main_layout.addWidget(self.image_label)
 
+        self.label_layout = QHBoxLayout()
+        self.curr_iterations = QLabel("Iteration: 1/" + str(int(len(self.iteration_images))), alignment=Qt.AlignLeft)
         self.time_label = QLabel("Time spent (s): " + str(finishTime), alignment=Qt.AlignRight)
-        self.main_layout.addWidget(self.time_label)
+        self.label_layout.addWidget(self.curr_iterations)
+        self.label_layout.addWidget(self.time_label)
+        self.main_layout.addLayout(self.label_layout)
 
         self.next_iteration_btn = QPushButton("Next iteration")
         self.next_iteration_btn.clicked.connect(self.next_iteration_clicked)
@@ -86,9 +92,10 @@ class TrackingSelector(QWidget):
         self.main_layout.addWidget(self.export_video_btn)
 
     def next_iteration(self, step=1):
-        self.iteration = self.iteration + step
-        if self.iteration >= len(self.iteration_images):
+        if self.iteration + step >= len(self.iteration_images):
             return
+        self.iteration = self.iteration + step
+        self.curr_iterations.setText("Iteration: " + str(self.iteration + 1) + "/" + str(int(len(self.iteration_images))))
         qim = ImageQt(self.iteration_images[self.iteration].image)
         pixmap = QPixmap.fromImage(qim).scaled(self.image_label.width(), self.image_label.height(),
                                                QtCore.Qt.KeepAspectRatio)
@@ -102,11 +109,10 @@ class TrackingSelector(QWidget):
 
     def next_image_clicked(self):
 
-        self.next_image_index = self.next_image_index + 1
-
-        if self.next_image_index >= len(self.my_images):
+        if self.next_image_index + 1 >= len(self.my_images):
             return
 
+        self.next_image_index = self.next_image_index + 1
         self.iteration = 0
         self.my_image = self.my_images[self.next_image_index]
         startTime = time.time()
@@ -114,6 +120,9 @@ class TrackingSelector(QWidget):
         finishTime = round(time.time() - startTime, 2)
         self.time_label.setText("Time spent (s): " + str(finishTime))
         self.iteration_images = self.segmentation.get_iterations()
+
+        self.curr_iterations.setText(
+            "Iteration: " + str(self.iteration + 1) + "/" + str(int(len(self.iteration_images))))
         qim = ImageQt(self.iteration_images[self.iteration].image)
         pixmap = QPixmap.fromImage(qim).scaled(self.image_label.width(), self.image_label.height(),
                                                QtCore.Qt.KeepAspectRatio)
@@ -132,15 +141,18 @@ class TrackingSelector(QWidget):
         frames[0] = segmentation.get_last_iteration()
         for i in range(1, len(self.my_images)):
             segmentation.change_image(self.my_images[i])
-            frames[i] = segmentation.get_last_iteration()
+            segmentation.get_last_iteration().image.save("../Photos/resultados/frame" + str(i) + ".jpg")
 
-        index = 0
-        for frame in frames:
-            frame.image.save("../Photos/resultados/frame" + str(index) + ".jpg")
-            index += 1
+        # index = 0
+        # for frame in frames:
+        #     frame.
+        #     index += 1
 
         ffmpeg.input('../Photos/resultados/*.jpg', pattern_type='glob', framerate=10)\
             .output('../Photos/resultados/movie.mp4').run()
+
+        self.windows.append(VideoPlayer('../Photos/resultados/movie.mp4'))
+
 
     def select_images_clicked(self):
         options = QFileDialog.Options()
