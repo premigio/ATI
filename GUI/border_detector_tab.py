@@ -1,8 +1,11 @@
 import math
+
+from PyQt5.QtWidgets import QFileDialog
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
 from Algorithms.EdgeDetection.Harris import harris_detector
+from Algorithms.EdgeDetection.Sift import sift_algorithm
 from GUI.graph_window import GraphWindow
 from PyQt5 import QtWidgets
 
@@ -245,3 +248,19 @@ def show_harris_corner_detector(my_image: MyImage, window):
     image = harris_detector(my_image, sigma, k, percentile)
     image.image.show()
     return image
+
+
+def show_sift(my_image: MyImage, window):
+    options = QFileDialog.Options()
+    # options |= QFileDialog.DontUseNativeDialog
+    file_path, _ = QFileDialog.getOpenFileName(window, "Select image file", "../Photos",
+                                               "Images (*.jpg *.jpeg *.raw *.pbm *.ppm *.pgm *.RAW *.png)",
+                                               options=options)
+    new_img = window.ask_for_image(image_path=file_path)
+
+    octave = window.ask_for_int('Choose a value for the octave', default=3, text="octave")
+    equal_threshold = window.ask_for_int('Choose a value for the threshold to compare', default=200, text="octave")
+
+    _, equal = sift_algorithm(my_image, new_img, show_detected_keypoints=False)
+
+    return new_img

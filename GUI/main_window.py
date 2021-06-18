@@ -162,7 +162,10 @@ class MainWindow(QWidget):
             QPushButton("Segmentation", clicked=self.show_segmentation))
         border_detector_layout.addWidget(
             QPushButton("Harris corner detector", clicked=self.show_harris))
+        border_detector_layout.addWidget(
+            QPushButton("SIFT", clicked=self.show_sift))
         border_detector_tab.setLayout(border_detector_layout)
+
 
         filter_tab = QWidget()
         filter_layout = QVBoxLayout()
@@ -509,6 +512,9 @@ class MainWindow(QWidget):
 
     def show_harris(self):
         self.show_border_detector(bdt.show_harris_corner_detector)
+
+    def show_sift(self):
+        self.show_border_detector(bdt.show_sift)
 
     # ------------------------- UTILS ---------------------------------------------------------------------
     def ask_for_int(self, message: str, default: int = 1, min_value: int = 0, max_value: int = 2147483647,
