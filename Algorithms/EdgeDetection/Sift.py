@@ -61,9 +61,12 @@ def sift_algorithm(image1: MyImage, image2, octaves=None, threshold=100,
                        flags=cv.DrawMatchesFlags_DEFAULT)
     final_image = cv.drawMatchesKnn(img1, kp1, img2, kp2, matches, None, **draw_params)
 
-    plt.imshow(final_image)
-    plt.show()
-
     count = filter(lambda a: a == [1, 0], matchesMask)
     count = len(list(count))
-    return MyImage.from_image(Image.fromarray(final_image)), count > threshold
+    equal = count > threshold
+
+    plt.imshow(final_image)
+    plt.title("Boolean to show whether images are the same: " + str(equal))
+    plt.show()
+
+    return MyImage.from_image(Image.fromarray(final_image)), equal
