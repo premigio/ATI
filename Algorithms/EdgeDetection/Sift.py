@@ -12,7 +12,7 @@ def __grey_photo(img, mode):
 
 
 # default es None, que en realidad es d=3 por como esta en el paper
-def sift_algorithm(image1: MyImage, image2, octaves=None,
+def sift_algorithm(image1: MyImage, image2, octaves=None, threshold=100,
                    show_detected_keypoints=True):
     if image1 is None or image1.image is None or image2 is None or image2.image is None:
         return
@@ -30,15 +30,14 @@ def sift_algorithm(image1: MyImage, image2, octaves=None,
     kp1, descriptor1 = sift.detectAndCompute(img1, None)
     kp2, descriptor2 = sift.detectAndCompute(img2, None)
 
-    # img1_draw = cv.drawKeypoints(img1, kp1, None, flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-    # img2_draw = cv.drawKeypoints(img2, kp2, None, flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-    #
-    # if show_detected_keypoints:
-    #     plt.imshow(img1_draw, cmap='gray')
-    #     plt.show()
-    #
-    #     plt.imshow(img2_draw, cmap='gray')
-    #     plt.show()
+    if show_detected_keypoints:
+        img1_draw = cv.drawKeypoints(img1, kp1, None, flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        img2_draw = cv.drawKeypoints(img2, kp2, None, flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        plt.imshow(img1_draw, cmap='gray')
+        plt.show()
+
+        plt.imshow(img2_draw, cmap='gray')
+        plt.show()
 
     # matcher = cv.BFMatcher(cv2.NORM_L1, crossCheck=True)
     # matches = matcher.match(descriptor1, descriptor2, neighbours)
@@ -65,4 +64,6 @@ def sift_algorithm(image1: MyImage, image2, octaves=None,
     plt.imshow(final_image)
     plt.show()
 
-    return MyImage.from_image(Image.fromarray(final_image))
+    count = filter(lambda a: a == [1, 0], matchesMask)
+    count = len(list(count))
+    return MyImage.from_image(Image.fromarray(final_image)), count > threshold

@@ -30,10 +30,9 @@ if __name__ == '__main__':
     alonso3 = MyImage('../Photos/similar_photos/Alonso/ElCaminanteAlonso2.jpg')
     alonso4 = MyImage('../Photos/similar_photos/Alonso/ElCaminanteAlonso3.jpg')
 
-
-
     square = MyImage('../Photos/cuadrado.png')
 
     # harris = harris_detector(test_photo, 2, 0.04, 97.0)
     # harris.image.show()
-    sift_algorithm(imtest2, imtest3)
+    _, equal = sift_algorithm(alonso1, alonso2, show_detected_keypoints=False)
+    print(equal)
