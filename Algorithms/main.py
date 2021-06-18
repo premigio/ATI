@@ -36,4 +36,4 @@ if __name__ == '__main__':
 
     # harris = harris_detector(test_photo, 2, 0.04, 97.0)
     # harris.image.show()
-    sift_algorithm(imtest2, imtest3,)
+    sift_algorithm(imtest2, imtest3)
