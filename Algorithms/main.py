@@ -1,4 +1,4 @@
-from Algorithms.ObjectDetection.Kaze import akaze
+from Algorithms.ObjectDetection.Kaze import akaze, kaze
 from Algorithms.ObjectDetection.Sift import *
 from Algorithms.Classes.MyImage import *
 
@@ -34,4 +34,7 @@ if __name__ == '__main__':
     # harris = harris_detector(test_photo, 2, 0.04, 97.0)
     # harris.image.show()
     _, equal = akaze(arc0, arc1, show_detected_keypoints=True)
+    print(equal)
+
+    _, equal = kaze(arc0, arc1, show_detected_keypoints=True)
     print(equal)

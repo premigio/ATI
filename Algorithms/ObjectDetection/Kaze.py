@@ -7,10 +7,18 @@ from Algorithms.Classes.MyImage import MyImage
 
 
 def akaze(image1: MyImage, image2: MyImage, octaves=None, threshold=50, show_detected_keypoints=True):
+    akaze_cv2 = cv2.AKAZE_create(nOctaveLayers=octaves)
+    return method(image1, image2, akaze_cv2, threshold, show_detected_keypoints)
+
+
+def kaze(image1: MyImage, image2: MyImage, octaves=None, threshold=50, show_detected_keypoints=True):
+    kaze_cv2 = cv2.KAZE_create(nOctaveLayers=octaves)
+    return method(image1, image2, kaze_cv2, threshold, show_detected_keypoints)
+
+
+def method(image1: MyImage, image2: MyImage, method, threshold, show_detected_keypoints):
     if image1 is None or image1.image is None or image2 is None or image2.image is None:
         return
-
-    akaze_cv2 = cv2.AKAZE_create(nOctaveLayers=octaves)
 
     img1 = np.array(image1.image)
     img2 = np.array(image2.image)
@@ -19,8 +27,8 @@ def akaze(image1: MyImage, image2: MyImage, octaves=None, threshold=50, show_det
     img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
     # Encuentro y dibujo los keypoints de la imagen y computo
-    keypoints_1, descriptors_1 = akaze_cv2.detectAndCompute(img1, None)
-    keypoints_2, descriptors_2 = akaze_cv2.detectAndCompute(img2, None)
+    keypoints_1, descriptors_1 = method.detectAndCompute(img1, None)
+    keypoints_2, descriptors_2 = method.detectAndCompute(img2, None)
 
     if show_detected_keypoints:
         img1_draw = cv2.drawKeypoints(img1, keypoints_1, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
@@ -46,7 +54,7 @@ def akaze(image1: MyImage, image2: MyImage, octaves=None, threshold=50, show_det
     equal = len(good_matches) > threshold
 
     plt.imshow(final_img)
-    plt.title("Boolean to show whether images are the same: " + str(equal))
+    plt.title("Images are the same: " + str(equal))
     plt.show()
 
     return MyImage.from_image(Image.fromarray(final_img)), equal
