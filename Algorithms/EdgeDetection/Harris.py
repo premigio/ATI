@@ -67,13 +67,13 @@ def harris_detector(my_image: MyImage, gauss_sigma: int, k: float, percentile: f
     if my_image is None:
         return
 
-    img = my_image.image
+    img_greyscale = my_image.image.convert("L")
+    pixel_array = np.array(img_greyscale, dtype=np.float64)
 
-    ix2 = np.ndarray(shape=my_image.dimensions)
-    iy2 = np.ndarray(shape=my_image.dimensions)
-    ixy = np.ndarray(shape=my_image.dimensions)
-    w, h = my_image.dimensions
-    pixel_array = np.array(img, dtype=np.float64)
+    ix2 = np.ndarray(shape=img_greyscale.size)
+    iy2 = np.ndarray(shape=img_greyscale.size)
+    ixy = np.ndarray(shape=img_greyscale.size)
+    w, h = pixel_array.shape
 
     # Calcular Ix e Iy usando las máscaras de Prewitt o Sobel para cada pixel de la imagen.
     gx, gy = get_directional_derivatives(pixel_array, w, h, mask_h, mask_v)
@@ -92,7 +92,7 @@ def harris_detector(my_image: MyImage, gauss_sigma: int, k: float, percentile: f
     ixy = gaussian_filter(ixy, gauss_sigma)
 
     # Ya tengo Ix2, Iy2 e Ixy --> tengo la matriz M --> Calcular R (usamos R1)
-    r = np.ndarray(shape=my_image.dimensions)
+    r = np.ndarray(shape=img_greyscale.size)
     for x in range(w):
         for y in range(h):
             r[x, y] = (ix2[x, y] * iy2[x, y] - np.power(ixy[x, y], 2)) - k * np.power(ix2[x, y] + iy2[x, y], 2)
@@ -111,7 +111,7 @@ def harris_detector(my_image: MyImage, gauss_sigma: int, k: float, percentile: f
     print(threshold)
 
     # Mostramos los corners
-    drawn_img = Image.new('RGB', my_image.dimensions)
+    drawn_img = Image.new('RGB', img_greyscale.size)
     for x in range(w):
         for y in range(h):
             if r[x, y] >= threshold:
@@ -120,4 +120,4 @@ def harris_detector(my_image: MyImage, gauss_sigma: int, k: float, percentile: f
                 pixel = int(pixel_array[x, y])
                 drawn_img.putpixel((y, x), (pixel, pixel, pixel))
 
-    return MyImage.from_image(drawn_img, my_image.dimensions)
+    return MyImage.from_image(drawn_img, img_greyscale.size)

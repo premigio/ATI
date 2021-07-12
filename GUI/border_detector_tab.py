@@ -1,11 +1,10 @@
 import math
 
 from PyQt5.QtWidgets import QFileDialog
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
-from matplotlib.figure import Figure
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from Algorithms.EdgeDetection.Harris import harris_detector
-from Algorithms.EdgeDetection.Sift import sift_algorithm
+from Algorithms.ObjectDetection.Sift import sift_algorithm
 from GUI.graph_window import GraphWindow
 from PyQt5 import QtWidgets
 
@@ -15,7 +14,6 @@ from Algorithms.EdgeDetection.HoughTransform import *
 from Algorithms.Classes.MyImage import MyImage
 
 # mask_size should be at least 6 * sigma + 1
-from Algorithms.EdgeDetection.Segmentation import Segmentation
 from Algorithms.EdgeDetection.Susan import susan_detector
 
 

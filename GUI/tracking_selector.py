@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QDesktopWidget, QPushB
     QFileDialog
 
 from Algorithms.Classes.MyImage import MyImage
-from Algorithms.EdgeDetection.Segmentation import Segmentation
+from Algorithms.ObjectDetection.Segmentation import Segmentation
 from GUI.image_cropper import ImageCropper
 from GUI.video_player import VideoPlayer
 
