@@ -52,13 +52,13 @@ if __name__ == '__main__':
     iguazu_dataset = [iguazu1, iguazu2, iguazu3, iguazu4, iguazu5, iguazu6]
 
     for i in range(5):
-        img1 = iguazu_dataset[0]
-        img2 = iguazu_dataset[i+1]
+        img1 = boat_dataset[0]
+        img2 = boat_dataset[i+1]
 
-        print("Iguazu dataset img1 vs. img" + str(i+2))
+        print("Boat dataset img1 vs. img" + str(i+2))
 
         startTime = time.time()
-        _, equal = kaze(img1, img2, show_detected_keypoints=True)
+        _, equal = sift_algorithm(img1, img2, show_detected_keypoints=False)
         finishTime = round(time.time() - startTime, 2)
         print("Time: " + str(finishTime))
         print("Equal: " + str(equal))

@@ -164,6 +164,8 @@ class MainWindow(QWidget):
             QPushButton("Harris corner detector", clicked=self.show_harris))
         border_detector_layout.addWidget(
             QPushButton("SIFT", clicked=self.show_sift))
+        border_detector_layout.addWidget(
+            QPushButton("ASIFT", clicked=self.show_asift))
         border_detector_tab.setLayout(border_detector_layout)
 
 
@@ -515,6 +517,9 @@ class MainWindow(QWidget):
 
     def show_sift(self):
         self.show_detector(dt.show_sift)
+
+    def show_asift(self):
+        self.show_detector(dt.show_asift)
 
     # ------------------------- UTILS ---------------------------------------------------------------------
     def ask_for_int(self, message: str, default: int = 1, min_value: int = 0, max_value: int = 2147483647,
