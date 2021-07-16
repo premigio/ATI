@@ -1,3 +1,5 @@
+import time
+
 from Algorithms.ObjectDetection.Kaze import akaze, kaze
 from Algorithms.ObjectDetection.Sift import *
 from Algorithms.Classes.MyImage import *
@@ -31,10 +33,32 @@ if __name__ == '__main__':
 
     square = MyImage('../Photos/cuadrado.png')
 
-    # harris = harris_detector(test_photo, 2, 0.04, 97.0)
-    # harris.image.show()
-    _, equal = akaze(arc0, arc1, show_detected_keypoints=True)
-    print(equal)
+    boat1 = MyImage('../Photos/boat/img1.jpg')
+    boat2 = MyImage('../Photos/boat/img2.jpg')
+    boat3 = MyImage('../Photos/boat/img3.jpg')
+    boat4 = MyImage('../Photos/boat/img4.jpg')
+    boat5 = MyImage('../Photos/boat/img5.jpg')
+    boat6 = MyImage('../Photos/boat/img6.jpg')
 
-    _, equal = kaze(arc0, arc1, show_detected_keypoints=True)
-    print(equal)
+    boat_dataset = [boat1, boat2, boat3, boat4, boat5, boat6]
+
+    iguazu1 = MyImage('../Photos/iguazu/img1.jpg')
+    iguazu2 = MyImage('../Photos/iguazu/img2.jpg')
+    iguazu3 = MyImage('../Photos/iguazu/img3.jpg')
+    iguazu4 = MyImage('../Photos/iguazu/img4.jpg')
+    iguazu5 = MyImage('../Photos/iguazu/img5.jpg')
+    iguazu6 = MyImage('../Photos/iguazu/img6.jpg')
+
+    iguazu_dataset = [iguazu1, iguazu2, iguazu3, iguazu4, iguazu5, iguazu6]
+
+    for i in range(5):
+        img1 = iguazu_dataset[0]
+        img2 = iguazu_dataset[i+1]
+
+        print("Iguazu dataset img1 vs. img" + str(i+2))
+
+        startTime = time.time()
+        _, equal = kaze(img1, img2, show_detected_keypoints=True)
+        finishTime = round(time.time() - startTime, 2)
+        print("Time: " + str(finishTime))
+        print("Equal: " + str(equal))

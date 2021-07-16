@@ -19,7 +19,7 @@ from Algorithms.Classes.MyImage import MyImage, Mode
 import GUI.functions_tab as ft
 import GUI.noises_filters_tab as nt
 import GUI.threshold_tab as tt
-import GUI.border_detector_tab as bdt
+import GUI.detector_tab as dt
 
 import matplotlib
 
@@ -195,7 +195,7 @@ class MainWindow(QWidget):
         functions_tab.setLayout(functions_layout)
 
         tabLayout.addTab(threshold_tab, "Thresholds")
-        tabLayout.addTab(border_detector_tab, "Border detectors")
+        tabLayout.addTab(border_detector_tab, "Detectors")
         tabLayout.addTab(filter_tab, "Filters and noise")
         tabLayout.addTab(operations_tab, "Operations")
         tabLayout.addTab(functions_tab, "More functions")
@@ -465,45 +465,45 @@ class MainWindow(QWidget):
 
     # ------------------------- BORDER DETECTORS ---------------------------------------------------------
     # Generic function for thresholds
-    def show_border_detector(self, border_detector):
+    def show_detector(self, detector):
         working_image = self.myImage if self.stacked_image is None else self.stacked_image
-        new_image = border_detector(working_image, self)
+        new_image = detector(working_image, self)
         self.stacked_image = new_image if new_image is not None else self.stacked_image
 
     def show_laplacian_detector(self):
-        self.show_threshold_fn(bdt.show_laplacian_detector)
+        self.show_threshold_fn(dt.show_laplacian_detector)
 
     def show_laplacian_slope_detector(self):
-        self.show_threshold_fn(bdt.show_laplacian_slope_detector)
+        self.show_threshold_fn(dt.show_laplacian_slope_detector)
 
     def show_laplacian_gauss_detector(self):
-        self.show_threshold_fn(bdt.show_laplacian_gauss_detector)
+        self.show_threshold_fn(dt.show_laplacian_gauss_detector)
 
     def show_prewitt(self):
-        self.show_border_detector(bdt.show_prewitt_detector)
+        self.show_detector(dt.show_prewitt_detector)
 
     def show_sobel(self):
-        self.show_border_detector(bdt.show_sobel_detector)
+        self.show_detector(dt.show_sobel_detector)
 
     def show_directional_border(self):
-        self.show_border_detector(bdt.show_directional_border)
+        self.show_detector(dt.show_directional_border)
 
     def show_canny(self):
-        self.show_border_detector(bdt.show_canny_detector)
+        self.show_detector(dt.show_canny_detector)
 
     def show_susan(self):
-        self.show_border_detector(bdt.show_susan_detector)
+        self.show_detector(dt.show_susan_detector)
 
     def show_hough_line(self):
         working_image = self.myImage if self.stacked_image is None else self.stacked_image
-        w1 = bdt.show_hough_line_detector(working_image, self)
+        w1 = dt.show_hough_line_detector(working_image, self)
         self.windows.append(w1)
         w1.show()
         # self.windows.append(w2)
         # w2.show()
 
     def show_hough_circle(self):
-        self.show_border_detector(bdt.show_hough_circle_detector)
+        self.show_detector(dt.show_hough_circle_detector)
 
     def show_segmentation(self):
         tracking_window = TrackingSelector()
@@ -511,10 +511,10 @@ class MainWindow(QWidget):
         tracking_window.show()
 
     def show_harris(self):
-        self.show_border_detector(bdt.show_harris_corner_detector)
+        self.show_detector(dt.show_harris_corner_detector)
 
     def show_sift(self):
-        self.show_border_detector(bdt.show_sift)
+        self.show_detector(dt.show_sift)
 
     # ------------------------- UTILS ---------------------------------------------------------------------
     def ask_for_int(self, message: str, default: int = 1, min_value: int = 0, max_value: int = 2147483647,

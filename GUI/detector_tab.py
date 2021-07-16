@@ -1,9 +1,11 @@
 import math
+import time
 
 from PyQt5.QtWidgets import QFileDialog
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from Algorithms.EdgeDetection.Harris import harris_detector
+from Algorithms.ObjectDetection.Kaze import kaze
 from Algorithms.ObjectDetection.Sift import sift_algorithm
 from GUI.graph_window import GraphWindow
 from PyQt5 import QtWidgets
@@ -187,7 +189,8 @@ def show_hough_line_detector(my_image: MyImage, window):
         return
     D = max(my_image.image.size)
 
-    min_rho = window.ask_for_float('Choose min ρ value', default=(-(2 ** 0.5) * D), min_value=(-9999999.0), text="min ρ")
+    min_rho = window.ask_for_float('Choose min ρ value', default=(-(2 ** 0.5) * D), min_value=(-9999999.0),
+                                   text="min ρ")
     max_rho = window.ask_for_float('Choose max ρ value', default=((2 ** 0.5) * D), text="max ρ")
     size_rho = window.ask_for_int('Choose number of ρ values', default=200, text="number of ρ")
     min_theta = window.ask_for_float('Choose min θ value', default=(-90.0), min_value=(-180.0), text="min θ")
@@ -231,12 +234,11 @@ def show_hough_circle_detector(my_image: MyImage, window):
 
 
 def show_harris_corner_detector(my_image: MyImage, window):
-
     if my_image is None:
         return
 
     percentile = window.ask_for_float('Choose corner percentile', default=98.0, max_value=100.0,
-                                   text="Percentile", decimals=2)
+                                      text="Percentile", decimals=2)
     sigma = window.ask_for_int('Choose sigma', default=2, text="Sigma")
     k = window.ask_for_float('Choose k value', default=0.04, text='K', decimals=2)
 
@@ -260,5 +262,29 @@ def show_sift(my_image: MyImage, window):
     equal_threshold = window.ask_for_int('Choose a value for the threshold to compare', default=200, text="octave")
 
     _, equal = sift_algorithm(my_image, new_img, show_detected_keypoints=False)
+
+    return new_img
+
+
+def show_kaze(my_image: MyImage, window):
+
+    options = QFileDialog.Options()
+    # options |= QFileDialog.DontUseNativeDialog
+    file_path, _ = QFileDialog.getOpenFileName(window, "Select image file", "../Photos",
+                                               "Images (*.jpg *.jpeg *.raw *.pbm *.ppm *.pgm *.RAW *.png)",
+                                               options=options)
+    new_img = window.ask_for_image(image_path=file_path)
+
+    octave = window.ask_for_int('Choose a value for the octave', default=3, text="octave")
+
+    equal_threshold = window.ask_for_int('Choose a value for the threshold to compare', default=200, text="octave")
+
+    startTime = time.time()
+
+    _, equal = kaze(my_image, new_img, octaves=octave, threshold=equal_threshold, show_detected_keypoints=False)
+
+    finishTime = round(time.time() - startTime, 2)
+
+    print("Time: " + str(finishTime))
 
     return new_img
